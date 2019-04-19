@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>Logic Picture Puzzle (Nonogram)</title>
+
+	<link rel="stylesheet" href="css/foundation/foundation.min.css" type="text/css" />
+	<link rel="stylesheet" href="css/app/1-base.css" type="text/css" />
+	<link rel="stylesheet" href="css/app/2-small.css" type="text/css" />
+	<link rel="stylesheet" href="css/app/3-medium.css" type="text/css" />
+	<link rel="stylesheet" href="css/app/4-large.css" type="text/css" />
+
+</head>
+
+<body>
+
+<div id="page" class="vcvcxvxzcv">
+
+	<header id="site-header">
+		<h1>Picture Crossword (<a href="https://en.wikipedia.org/wiki/Nonogram" target="_blank">Nonogram</a>)</h1>
+	</header>
+
+	<main>
+
+		<ul class="tabs" data-tabs id="option-tabs">
+			<li class="tabs-title is-active icon generate"><a href="#generate-puzzle" aria-selected="true">Generate
+				Random Puzzle</a></li>
+			<li class="tabs-title create icon "><a href="#create-puzzle">Draw Puzzle</a></li>
+			<li class="tabs-title hints icon "><a href="#solve-puzzle">Solve Puzzle</a></li>
+		</ul>
+
+		<div class="tabs-content" data-tabs-content="option-tabs">
+
+			<div class="tabs-panel is-active" id="generate-puzzle">
+				<div class="row controls">
+					<div class="columns">
+						<select id="generate-width" class="width"></select>
+						<label class="x">x</label>
+						<select id="generate-height" class="height"></select>
+
+						<button id="generate-button" class="button icon generate">Generate</button>
+						<!--
+						<div id="test1"></div>
+						-->
+					</div>
+				</div>
+				<div class="row">
+					<div class="shrink columns">
+						<div class="grid-container"></div>
+					</div>
+					<div class="columns">
+						<div class="grid-controls"></div>
+						<div class="console"></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="tabs-panel" id="create-puzzle">
+				<div class="row controls">
+					<div class="columns">
+						<select id="create-width" class="width"></select>
+						<label class="x">x</label>
+						<select id="create-height" class="height"></select>
+
+						<button id="create-button" class="button icon create">Start Drawing</button>
+					</div>
+				</div>
+				<div class="row">
+					<div class="shrink columns">
+						<div class="grid-container"></div>
+					</div>
+					<div class="columns">
+						<div class="grid-controls"></div>
+						<div class="console"></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="tabs-panel" id="solve-puzzle">
+				<div class="row controls">
+					<div class="columns">
+						<select id="solve-width" class="width"></select>
+						<label class="x">x</label>
+						<select id="solve-height" class="height"></select>
+
+						<button id="solve-button" class="button icon hints">Enter Hints</button>
+					</div>
+				</div>
+				<div class="row">
+					<div class="shrink columns">
+						<div class="grid-container"></div>
+					</div>
+					<div class="columns">
+						<div class="grid-controls"></div>
+						<div class="console"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+	</main>
+
+</div>
+
+
+<script src="js/jquery/jquery-2.1.4.min.js"></script>
+<script src="js/foundation/foundation.min.js"></script>
+
+<script src="js/logic-pic/puzzle.js"></script>
+<script src="js/logic-pic/gui.js"></script>
+<script src="js/logic-pic/creator.js"></script>
+<script src="js/logic-pic/solver2.js"></script>
+<script src="js/logic-pic/predefined.js"></script>
+
+<script>
+
+
+	$( document ).foundation();
+
+
+	// ####################################################
+
+	/*
+	var p = LogicPic.PredefinedPuzzles.p_30x30_1;
+
+
+	var puzzle = new LogicPic.Puzzle( p.width, p.height );
+
+	if(p.solutionGrid) {
+		puzzle.createFromGrid( p.solutionGrid );
+	} else {
+		puzzle.createFromHints( p.hints );
+	}
+
+
+	var gui = new LogicPic.Gui( puzzle );
+
+	gui.drawPuzzle( $( '#generate-puzzle .grid-container' ) );
+	gui.drawSolution();
+
+
+	var solver = new LogicPic.Solver( puzzle );
+	solver.solve();
+
+
+	$( document ).ready( function()
+	{
+		gui.drawAiSolution();
+		gui.drawPreviewSolution( $( '#generate-puzzle .logic-pic td.preview' ) );
+		gui.drawAiSolutionLog( solver, $( '#generate-puzzle .console' ) );
+	});
+	*/
+
+	// ####################################################	generate puzzle
+
+	var optionHtml = '',
+		i;
+
+	for (i = 5; i <= 30; i++) {
+		optionHtml += '<option value="' + i + '">' + i + '</option>';
+	}
+
+	$( 'select.width' ).html( optionHtml ).val( 5 );
+	$( 'select.height' ).html( optionHtml ).val( 5 );
+
+	$( '#generate-button' ).click( function ( e )
+	{
+		var width     = $( '#generate-width' ).val(),
+			height    = $( '#generate-height' ).val(),
+			$grid     = $( '#generate-puzzle .grid-container' ),
+			$console  = $( '#generate-puzzle .console' ),
+			$controls = $( '#generate-puzzle .grid-controls' ),
+			puzzle    = new LogicPic.Puzzle( width, height ),
+			creator   = new LogicPic.Creator( puzzle ),
+			gui       = new LogicPic.Gui( puzzle );
+
+		e.preventDefault();
+
+		creator.create();
+		gui.drawPuzzle( $grid );
+		gui.drawCreatorLog( creator, $console );
+		gui.drawUserControls( $controls );
+		gui.makePuzzlePlayable();
+
+		//gui.showPuzzleSolvedAnimation();
+	} );
+
+
+	setTimeout( function ()
+	{
+		$( '#generate-button' ).click();
+	}, 200 );
+
+
+</script>
+
+
+</body>
+</html>
