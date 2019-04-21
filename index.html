@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-	<title>Logic Picture Puzzle (Nonogram)</title>
+	<title>Picture Crossword (Nonogram)</title>
 
 	<link rel="stylesheet" href="css/foundation/foundation.min.css" type="text/css" />
 	<link rel="stylesheet" href="css/app/1-base.css" type="text/css" />
@@ -19,7 +19,10 @@
 <div id="page">
 
 	<header id="site-header">
-		<h1>Picture Crossword (<a href="https://en.wikipedia.org/wiki/Nonogram" target="_blank">Nonogram</a>)</h1>
+		<h1>
+			Picture Crossword
+			(<a href="https://en.wikipedia.org/wiki/Nonogram" target="_blank">Nonogram</a>)
+		</h1>
 	</header>
 
 	<main>
@@ -38,12 +41,9 @@
 					<div class="columns">
 						<select id="generate-width" class="width" aria-label="Width"></select>
 						<label class="x">x</label>
-						<select id="generate-height" class="height"></select>
+						<select id="generate-height" class="height" aria-label="Height"></select>
 
 						<button id="generate-button" class="button icon generate">Generate</button>
-						<!--
-						<div id="test1"></div>
-						-->
 					</div>
 				</div>
 				<div class="row">
@@ -60,9 +60,9 @@
 			<div class="tabs-panel" id="create-puzzle">
 				<div class="row controls">
 					<div class="columns">
-						<select id="create-width" class="width"></select>
+						<select id="create-width" class="width" aria-label="Width"></select>
 						<label class="x">x</label>
-						<select id="create-height" class="height"></select>
+						<select id="create-height" class="height" aria-label="Height"></select>
 
 						<button id="create-button" class="button icon create">Start Drawing</button>
 					</div>
@@ -81,9 +81,9 @@
 			<div class="tabs-panel" id="solve-puzzle">
 				<div class="row controls">
 					<div class="columns">
-						<select id="solve-width" class="width"></select>
+						<select id="solve-width" class="width" aria-label="Width"></select>
 						<label class="x">x</label>
-						<select id="solve-height" class="height"></select>
+						<select id="solve-height" class="height" aria-label="Height"></select>
 
 						<button id="solve-button" class="button icon hints">Enter Hints</button>
 					</div>
@@ -100,7 +100,6 @@
 			</div>
 		</div>
 
-
 	</main>
 
 </div>
@@ -109,11 +108,15 @@
 <script src="js/jquery/jquery-2.1.4.min.js"></script>
 <script src="js/foundation/foundation.min.js"></script>
 
-<script src="js/logic-pic/puzzle.js"></script>
-<script src="js/logic-pic/gui.js"></script>
-<script src="js/logic-pic/creator.js"></script>
-<script src="js/logic-pic/solver2.js"></script>
-<script src="js/logic-pic/predefined.js"></script>
+<script src="js/nonogram/nonogram.js"></script>
+<script src="js/nonogram/puzzle.js"></script>
+<script src="js/nonogram/puzzle-cell.js"></script>
+<script src="js/nonogram/puzzle-line.js"></script>
+<script src="js/nonogram/utility.js"></script>
+<script src="js/nonogram/gui.js"></script>
+<script src="js/nonogram/creator.js"></script>
+<script src="js/nonogram/solver.js"></script>
+<script src="js/nonogram/predefined.js"></script>
 
 <script>
 
@@ -124,10 +127,10 @@
 	// ####################################################
 
 	/*
-	var p = LogicPic.PredefinedPuzzles.p_30x30_1;
+	var p = Nonogram.PredefinedPuzzles.p_30x30_1;
 
 
-	var puzzle = new LogicPic.Puzzle( p.width, p.height );
+	var puzzle = new Nonogram.Puzzle( p.width, p.height );
 
 	if(p.solutionGrid) {
 		puzzle.createFromGrid( p.solutionGrid );
@@ -136,46 +139,109 @@
 	}
 
 
-	var gui = new LogicPic.Gui( puzzle );
+	var gui = new Nonogram.Gui( puzzle );
 
 	gui.drawPuzzle( $( '#generate-puzzle .grid-container' ) );
 	gui.drawSolution();
 
 
-	var solver = new LogicPic.Solver( puzzle );
+	var solver = new Nonogram.Solver( puzzle );
 	solver.solve();
 
 
 	$( document ).ready( function()
 	{
 		gui.drawAiSolution();
-		gui.drawPreviewSolution( $( '#generate-puzzle .logic-pic td.preview' ) );
+		gui.drawPreviewSolution( $( '#generate-puzzle .nonogram td.preview' ) );
 		gui.drawAiSolutionLog( solver, $( '#generate-puzzle .console' ) );
 	});
 	*/
 
 	// ####################################################	generate puzzle
 
-	var optionHtml = '',
+	let optionHtml = '',
 		i;
 
 	for (i = 5; i <= 30; i++) {
 		optionHtml += '<option value="' + i + '">' + i + '</option>';
 	}
 
-	$( 'select.width' ).html( optionHtml ).val( 5 );
-	$( 'select.height' ).html( optionHtml ).val( 5 );
+	$( 'select.width' ).html( optionHtml ).val( 30 );
+	$( 'select.height' ).html( optionHtml ).val( 30 );
 
-	$( '#generate-button' ).click( function ( e )
+	$( '#generate-button' ).on( 'click', function ( e )
 	{
-		var width     = $( '#generate-width' ).val(),
-			height    = $( '#generate-height' ).val(),
-			$grid     = $( '#generate-puzzle .grid-container' ),
-			$console  = $( '#generate-puzzle .console' ),
-			$controls = $( '#generate-puzzle .grid-controls' ),
-			puzzle    = new LogicPic.Puzzle( width, height ),
-			creator   = new LogicPic.Creator( puzzle ),
-			gui       = new LogicPic.Gui( puzzle );
+		/*
+		var p       = Nonogram.PredefinedPuzzles.p_8x8_2;
+		var puzzle2 = new Nonogram.Puzzle( p.width, p.height );
+
+		puzzle2.createFromHints( p.hints );
+		*/
+
+		const width     = $( '#generate-width' ).val(),
+			  height    = $( '#generate-height' ).val(),
+			  $grid     = $( '#generate-puzzle .grid-container' ),
+			  $console  = $( '#generate-puzzle .console' ),
+			  $controls = $( '#generate-puzzle .grid-controls' ),
+			  puzzle    = new Nonogram.Puzzle( width, height ),
+			  creator   = new Nonogram.Creator( puzzle ),
+			  gui       = new Nonogram.Gui( puzzle );
+
+
+		// #############################################
+		/*
+				let LP = {};
+
+				LP.Puzzle = class
+				{
+					constructor( width, height )
+					{
+						this.width = parseInt( width, 10 );
+						this.reset();
+					}
+
+
+					reset()
+					{
+						console.log( 'called "LP.Puzzle.reset()"' );
+					}
+				};
+
+				let puzzleTest = new LP.Puzzle( 5, 5 );
+
+				console.log( LP );
+				console.log( puzzleTest );
+				puzzleTest.reset();
+				console.log( '---------' );
+				console.log( '---------' );
+
+				// ----------
+
+				var LogicPic2 = {};
+
+				LogicPic2.Puzzle = function ( width, height )
+				{
+					this.width = parseInt( width, 10 );
+					this.reset();
+				};
+
+				LogicPic2.Puzzle.prototype.reset = function ()
+				{
+					console.log( 'called "LogicPic2.Puzzle.prototype.reset()"' );
+				};
+
+				let test2 = new LogicPic2.Puzzle( 5, 5 );
+
+
+				console.log( LogicPic2 );
+				console.log( test2 );
+				console.log( test2.reset );
+				test2.reset();
+				console.log( '---------' );
+
+				//console.log( puzzle );
+		*/
+		// #############################################
 
 		e.preventDefault();
 
@@ -188,11 +254,15 @@
 		//gui.showPuzzleSolvedAnimation();
 	} );
 
-
-	setTimeout( function ()
+	window.addEventListener( 'load', function ()
 	{
-		$( '#generate-button' ).click();
-	}, 200 );
+		$( '#generate-button' ).trigger( 'click' );
+
+		setTimeout( function ()
+		{
+			$( '#solve-button' ).trigger( 'click' );
+		}, 10 );
+	} );
 
 
 </script>
