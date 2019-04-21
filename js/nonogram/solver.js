@@ -609,9 +609,6 @@ Nonogram.Solver = class
 			}
 		} );
 
-
-		console.log( maxPossibilities - totalPossibilities );
-
 		return maxPossibilities - totalPossibilities;
 	}
 
