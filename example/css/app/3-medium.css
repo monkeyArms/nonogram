@@ -1,0 +1,55 @@
+/************************************************** Medium screens - min-width 641px **************************************************/
+
+
+@media only screen and (min-width: 40.063em) {
+
+
+    /*	site header	*/
+    #site-header h1 { font-size: 32px; line-height: 32px; }
+
+
+    /*	content	*/
+    main { padding: 20px; }
+
+
+    .tabs-panel { padding: 16px; }
+
+    .wrapper {
+        grid-template-columns: [col] 1fr [col] 1fr [col] 1fr;
+        grid-template-rows: [row] auto [row] auto [row];
+        grid-gap: 30px;
+    }
+
+    .generate-controls {
+        grid-column: col / span 3;
+        grid-row: row 1;
+    }
+
+    .puzzle {
+        grid-column: col 1 / span 2;
+        grid-row: row 2;
+    }
+
+    .game-controls {
+        grid-column: col 1 / span 2;
+        grid-row: row 3;
+    }
+
+    .console {
+        grid-column: 3;
+        grid-row: 2 / span 3;
+    }
+
+
+    [data-nonogram-game-reset] { margin-left: auto !important; }
+
+    .nonogram-console { background: #eee; padding: 20px; }
+
+
+}
+ 
+
+
+
+
+

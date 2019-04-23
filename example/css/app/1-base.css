@@ -1,0 +1,69 @@
+/*	fonts	*/
+
+
+@font-face {
+    font-family: 'FontAwesome';
+    src: url('../../fonts/fontawesome-webfont.eot?v=4.6.3');
+    src: url('../../fonts/fontawesome-webfont.eot?#iefix&v=4.6.3') format('embedded-opentype'), url('../../fonts/fontawesome-webfont.woff2?v=4.6.3') format('woff2'), url('../../fonts/fontawesome-webfont.woff?v=4.6.3') format('woff'), url('../../fonts/fontawesome-webfont.ttf?v=4.6.3') format('truetype'), url('../../fonts/fontawesome-webfont.svg?v=4.6.3#fontawesomeregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+/*  basic reset   */
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+}
+body {
+    box-sizing: border-box;
+    line-height: 1;
+}
+ol, ul {
+    list-style: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+
+/*	base typography	*/
+
+body { background: #fff; font-family: 'Quicksand', sans-serif;; color: #777; font-size: 16px; line-height: 19px; overflow-y: scroll; }
+
+h1, h2, h3, h4, h5, h6 { color: #333; margin: 0 0 17px 0; font-weight: 500; }
+
+h1 { font-size: 32px; line-height: 32px; }
+
+a { color: #0081c6; }
+a:hover,
+a:focus { color: #30a1e6; }
+
+select { padding: 0.6em 0.5em; border: 1px solid #ddd; }
+
+.button { border-radius: 0; background-color: #0081c6; border: 2px solid #0081c6; vertical-align: middle; margin-bottom: 0;
+    font-weight: normal; font-size: 1.2em; color: #fff; padding: 0.3em 0.5em; cursor: pointer; text-transform: lowercase; }
+.button:hover,
+.button:focus { background-color: #30a1e6; }
+.button.icon:before { display: inline-block; content: ''; font-family: FontAwesome; margin: 0 10px 0 0; font-size: 1.5em; line-height: 0;
+    position: relative; top: 2px; }
+.button.selected { background: #fff; color: #0081c6; }
+
+

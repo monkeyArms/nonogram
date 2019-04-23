@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>nonogram</title>
+
+	<link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
+	<!--
+	<link rel="stylesheet" href="css/vendor/foundation/foundation.min.css" type="text/css" />
+	-->
+	<link rel="stylesheet" href="css/app/1-base.css" type="text/css" />
+	<link rel="stylesheet" href="css/app/2-small.css" type="text/css" />
+	<link rel="stylesheet" href="css/app/3-medium.css" type="text/css" />
+	<link rel="stylesheet" href="css/app/4-large.css" type="text/css" />
+
+</head>
+
+<body>
+
+<div id="page">
+
+	<header id="site-header">
+
+		<h1>nonogram</h1>
+
+		<a class="definition" href="https://en.wikipedia.org/wiki/Nonogram" target="_blank" rel="noopener"
+		   title="View Definition on Wikipedia">
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="34px" height="33.162px"
+				 viewBox="0 0 34 33.162" enable-background="new 0 0 34 33.162" xml:space="preserve">
+				<circle fill-rule="evenodd" clip-rule="evenodd" fill="#181616" cx="17" cy="16.58" r="16"></circle>
+				<g>
+					<path fill="#fff" d="M18.099,18.458v1.906c0,0.822-0.616,1.438-1.438,1.438c-0.763,0-1.438-0.615-1.438-1.438v-3.051
+		c0-0.029,0.029-0.029,0.029-0.059c-0.029-0.029-0.029-0.029-0.029-0.059c0-0.764,0.675-1.438,1.438-1.438
+		c1.849,0,3.345-1.467,3.345-3.286c0-1.849-1.496-3.286-3.345-3.286c-1.203,0-2.259,0.646-2.817,1.614
+		c-0.411,0.704-1.291,0.938-1.996,0.527c-0.675-0.41-0.91-1.262-0.499-1.966c1.056-1.819,3.052-3.052,5.311-3.052
+		c3.403,0,6.191,2.759,6.191,6.162C22.853,15.377,20.828,17.813,18.099,18.458z M18.099,24.884v0.527
+		c0,0.822-0.616,1.438-1.438,1.438c-0.763,0-1.438-0.615-1.438-1.438v-0.527c0-0.793,0.675-1.438,1.438-1.438
+		C17.482,23.447,18.099,24.091,18.099,24.884z"></path>
+				</g>
+			</svg>
+		</a>
+
+		<a class="github" href="https://github.com/monkeyArms/nonogram" target="_blank" rel="noopener"
+		   title="View on Github">
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="34px" height="33.162px"
+				 viewBox="0 0 34 33.162" enable-background="new 0 0 34 33.162"
+				 xml:space="preserve">
+				<path fill-rule="evenodd" clip-rule="evenodd" fill="#181616" d="M16.999,0.975C8.165,0.975,1,8.139,1,16.977
+	c0,7.069,4.584,13.065,10.942,15.182c0.801,0.147,1.093-0.348,1.093-0.771c0-0.379-0.015-1.387-0.022-2.721
+	c-4.45,0.967-5.39-2.145-5.39-2.145c-0.728-1.849-1.776-2.34-1.776-2.34c-1.453-0.994,0.11-0.974,0.11-0.974
+	c1.606,0.114,2.451,1.648,2.451,1.648c1.427,2.445,3.745,1.739,4.657,1.329c0.145-1.035,0.559-1.738,1.016-2.139
+	c-3.553-0.404-7.288-1.775-7.288-7.908c0-1.747,0.623-3.175,1.646-4.293c-0.165-0.405-0.714-2.031,0.157-4.234
+	c0,0,1.344-0.43,4.4,1.641c1.276-0.355,2.645-0.533,4.006-0.538c1.359,0.005,2.726,0.183,4.006,0.538
+	c3.054-2.071,4.395-1.641,4.395-1.641c0.872,2.203,0.324,3.83,0.159,4.234c1.025,1.119,1.646,2.547,1.646,4.293
+	c0,6.147-3.742,7.499-7.308,7.896c0.577,0.494,1.088,1.471,1.088,2.963c0,2.139-0.021,3.864-0.021,4.39
+	c0,0.429,0.29,0.925,1.103,0.77C28.42,30.038,33,24.043,33,16.977C33,8.139,25.836,0.975,16.999,0.975z"></path>
+			</svg>
+		</a>
+	</header>
+
+	<main>
+
+		<div class="wrapper">
+
+			<div class="generate-controls">
+				<div data-nonogram-generate-controls>
+					generate controls here
+				</div>
+			</div>
+
+			<div class="puzzle">
+				<div data-nonogram-puzzle-grid>
+					puzzle grid here
+				</div>
+			</div>
+
+			<div class="game-controls">
+				<div data-nonogram-game-controls>
+					game controls here
+				</div>
+			</div>
+
+			<div class="console">
+				<div data-nonogram-console>
+					console here
+				</div>
+			</div>
+
+		</div>
+
+	</main>
+
+</div>
+
+
+<script src="js/vendor/jquery/jquery-2.1.4.min.js"></script>
+<!--
+<script src="js/vendor/foundation/foundation.min.js"></script>
+-->
+
+<!--
+<script src="../src/nonogram/nonogram.js"></script>
+<script src="../src/nonogram/puzzle.js"></script>
+<script src="../src/nonogram/puzzle-cell.js"></script>
+<script src="../src/nonogram/puzzle-line.js"></script>
+<script src="../src/nonogram/utility.js"></script>
+<script src="../src/nonogram/gui.js"></script>
+<script src="../src/nonogram/creator.js"></script>
+<script src="../src/nonogram/solver.js"></script>
+<script src="../src/nonogram/puzzles/predefined.js"></script>
+-->
+
+
+<script src="../dist/nonogram/nonogram.min.js"></script>
+
+
+<script>
+
+
+	//$( document ).foundation();
+
+
+	window.addEventListener( 'load', function ()
+	{
+		const width   = 5,
+			  height  = 5,
+			  creator = new Nonogram.Creator( width, height ),
+			  puzzle  = creator.createRandom(),
+			  gui     = new Nonogram.Gui();
+
+		gui.creator = creator;
+
+		gui.drawPuzzle( puzzle );
+
+		gui.drawGameControls(); // done
+		gui.drawGenerateControls(); // done
+		gui.drawConsole(); // done
+
+		gui.makePuzzlePlayable();
+
+
+		setTimeout( function ()
+		{
+			//$( '#solve-button' ).trigger( 'click' );
+		}, 10 );
+	} );
+
+
+</script>
+
+
+</body>
+</html>

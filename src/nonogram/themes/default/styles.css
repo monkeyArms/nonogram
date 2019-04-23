@@ -1,0 +1,107 @@
+/** nonogram "default" theme styles **/
+
+
+/** template: controls-game.html   **/
+
+.button.fill-positive:before { content: '\f0c8'; }
+.button.fill-negative:before { content: '\f00d'; }
+.button.reset:before { content: '\f021'; }
+.button.solve:before { content: '\f128'; }
+
+[data-nonogram-game-controls] { padding: 0 0 20px 0; }
+.nonogram-game-controls { }
+[data-nonogram-game-controls] .fill-type { display: flex; justify-content: center; }
+[data-nonogram-game-controls] .button { margin: 0 10px 0 0;}
+[data-nonogram-game-controls] .button.fill-positive:before { margin: 0; }
+[data-nonogram-game-controls] .button.fill-negative:before { margin: 0; }
+
+
+/** template: controls-generate.html   **/
+
+.button.generate:before { content: '\f074'; }
+
+.nonogram-generate-controls { display: flex; flex-wrap: wrap; }
+
+.nonogram-generate-controls > * { margin: 0 20px 10px 0; }
+
+.nonogram-generate-controls input,
+.nonogram-generate-controls select { width: auto; }
+
+
+label.x { line-height: 30px; }
+
+
+/** template: console.html  **/
+
+.nonogram-console { background: #eee; padding: 20px; }
+.nonogram-console h2 {}
+.nonogram-console code { display: block; font-family: 'Fira Code Retina', 'Fira Code', 'Courier New', monospace;
+    font-size: 12px; line-height: 12px; margin: 0 0 5px 0; }
+
+
+/** template: puzzle-grid.html   **/
+
+table.nonogram-puzzle-grid { position: relative; width: auto; table-layout: fixed; transition: transform 1s ease; margin: 0 auto; }
+table.nonogram-puzzle-grid:after { transition: opacity; }
+
+table.nonogram-puzzle-grid tbody { border: none; }
+
+table.nonogram-puzzle-grid tr {}
+
+table.nonogram-puzzle-grid td { vertical-align: middle; padding: 0; border: 0; border-radius: 0; }
+
+table.nonogram-puzzle-grid td .fill { border: 2px solid #ccc; text-align: center; border-radius: 10px; background-color: #fff; }
+
+table.nonogram-puzzle-grid td.flippable .fill { transition: transform 0.3s ease; transform: rotateY(0deg); transform-style: preserve-3d; }
+table.nonogram-puzzle-grid td.flippable.flipped .fill { transform: rotateY(180deg); }
+
+
+table.nonogram-puzzle-grid td.highlight .fill { opacity: 0.5; }
+table.nonogram-puzzle-grid td.preview { padding: 10px; transition: opacity 1s ease; }
+
+table.nonogram-puzzle-grid td.puzzle-cell { background: #ccc; }
+table.nonogram-puzzle-grid td.puzzle-cell.playable { cursor: pointer; }
+
+table.nonogram-puzzle-grid td.puzzle-cell.tl { border-top-left-radius: 10px; }
+table.nonogram-puzzle-grid td.puzzle-cell.tr { border-top-right-radius: 10px; }
+table.nonogram-puzzle-grid td.puzzle-cell.bl { border-bottom-left-radius: 10px; }
+table.nonogram-puzzle-grid td.puzzle-cell.br { border-bottom-right-radius: 10px; }
+
+table.nonogram-puzzle-grid .fill { min-width: 30px; min-height: 30px; padding: 5px; }
+
+table.nonogram-puzzle-grid td.puzzle-cell .fill { }
+
+table.nonogram-puzzle-grid td.puzzle-cell.user-positive .fill,
+table.nonogram-puzzle-grid td.puzzle-cell.solution-positive .fill { background: #222; }
+table.nonogram-puzzle-grid td.puzzle-cell.user-negative .fill,
+table.nonogram-puzzle-grid td.puzzle-cell.solution-negative .fill { background-color: #fff;
+    background-position: 50% 50%; background-repeat: no-repeat;
+    background-image: url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' width='32px' height='32px' viewBox='0 0 32 32' enable-background='new 0 0 32 32' xml:space='preserve'%3E%3Cpolygon fill='%23ACACAC' points='26.104,9.521 22.479,5.897 16,12.376 9.522,5.897 5.896,9.522 12.375,16 5.898,22.478 9.522,26.103 16,19.625 22.479,26.103 26.103,22.478 19.625,16 '/%3E%3C/svg%3E%0A");}
+
+table.nonogram-puzzle-grid .hint { vertical-align: bottom; transition: opacity 1s ease;
+    background-color: #ddd; border: 2px solid #fff; border-radius: 10px; }
+table.nonogram-puzzle-grid .hint .fill { display: flex; align-items: center; justify-content: end; }
+table.nonogram-puzzle-grid .hint.top .fill { flex-direction: column; }
+table.nonogram-puzzle-grid .hint.top span { }
+table.nonogram-puzzle-grid .hint.left .fill { padding-right: 10px; }
+table.nonogram-puzzle-grid .hint.left span { margin: 0 0 0 5px; }
+
+table.nonogram-puzzle-grid td.row-column-highlight .fill,
+table.nonogram-puzzle-grid td.puzzle-cell.solution-negative.row-column-highlight .fill { background-color: #ddeef7; }
+table.nonogram-puzzle-grid td.puzzle-cell.playable.row-column-highlight.user-positive .fill,
+table.nonogram-puzzle-grid td.puzzle-cell.playable.row-column-highlight.solution-positive .fill { background: #000; }
+
+table.nonogram-preview { margin: 0 auto; border: none; }
+table.nonogram-preview tbody { border: none; }
+table.nonogram-preview td { border: none; border-radius: 0; line-height: 0; font-size: 0; padding: 0; width: 5px; height: 5px; }
+table.nonogram-preview td.filled { background: #222; }
+
+table.nonogram-puzzle-grid.solved { transform: scale(1.1, 1.1); }
+table.nonogram-puzzle-grid.solved:after { content: 'Solved!'; display: block; width: 100%; position: absolute; top: 50%; left: 0;
+    margin-top: -15px; text-align: center; font-size: 50px; color: #2c8231; font-weight: 800; transform: rotate(-15deg); }
+table.nonogram-puzzle-grid.solved .hint,
+table.nonogram-puzzle-grid.solved td.preview,
+table.nonogram-puzzle-grid.solved .hint .fill,
+table.nonogram-puzzle-grid.solved td.preview .fill { opacity: 0; padding: 0; border: 0; width: 0; height: 0; }
+
+
