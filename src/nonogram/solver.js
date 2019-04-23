@@ -6,7 +6,7 @@ import Nonogram from './nonogram';
  * @type {Nonogram.Solver}
  * @this Nonogram.Solver
  *
- * a class that solves puzzles using logical techniques a human might use
+ * a class that solves nonogram puzzles using logical techniques a human might use
  *
  * @property {Nonogram.Puzzle} this.puzzle
  * @property {boolean} this.isReset
@@ -34,12 +34,12 @@ Nonogram.Solver = class
 	solve()
 	{
 		const self       = this,
-			  start      = new Date().getTime();
+			  start      = new Date().getTime()
+		;
 		let lastProgress = -1,
 			pass         = 1,
 			solved, passStart, passEnd, end, passElapsedTime, totalElapsedTime
 		;
-
 
 		if (!self.isReset) {
 			self.reset();
@@ -411,7 +411,7 @@ Nonogram.Solver = class
 		{
 			totalSectionLength += section.length;
 		} );
-		
+
 		line.cells.forEach( ( cell ) =>
 		{
 			totalPositiveSolved += cell.aiSolution === 1;

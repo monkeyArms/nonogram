@@ -11,7 +11,6 @@
     /*	content	*/
     main { padding: 20px; }
 
-
     .tabs-panel { padding: 16px; }
 
     .wrapper {
@@ -39,7 +38,6 @@
         grid-column: 3;
         grid-row: 2 / span 3;
     }
-
 
     [data-nonogram-game-reset] { margin-left: auto !important; }
 

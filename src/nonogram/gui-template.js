@@ -84,8 +84,6 @@ Nonogram.GuiTemplate = class
 
 		div.innerHTML = this.html;
 
-		//console.log( div.childNodes );
-
 		return div;
 	}
 

@@ -1,15 +1,3 @@
-/*	fonts	*/
-
-
-@font-face {
-    font-family: 'FontAwesome';
-    src: url('../../fonts/fontawesome-webfont.eot?v=4.6.3');
-    src: url('../../fonts/fontawesome-webfont.eot?#iefix&v=4.6.3') format('embedded-opentype'), url('../../fonts/fontawesome-webfont.woff2?v=4.6.3') format('woff2'), url('../../fonts/fontawesome-webfont.woff?v=4.6.3') format('woff'), url('../../fonts/fontawesome-webfont.ttf?v=4.6.3') format('truetype'), url('../../fonts/fontawesome-webfont.svg?v=4.6.3#fontawesomeregular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-
 /*  basic reset   */
 
 html, body, div, span, applet, object, iframe,
@@ -46,7 +34,7 @@ table {
 
 /*	base typography	*/
 
-body { background: #fff; font-family: 'Quicksand', sans-serif;; color: #777; font-size: 16px; line-height: 19px; overflow-y: scroll; }
+body { background: #fff; font-family: 'Quicksand', sans-serif; color: #777; font-size: 16px; line-height: 19px; overflow-y: scroll; }
 
 h1, h2, h3, h4, h5, h6 { color: #333; margin: 0 0 17px 0; font-weight: 500; }
 
@@ -58,12 +46,8 @@ a:focus { color: #30a1e6; }
 
 select { padding: 0.6em 0.5em; border: 1px solid #ddd; }
 
-.button { border-radius: 0; background-color: #0081c6; border: 2px solid #0081c6; vertical-align: middle; margin-bottom: 0;
-    font-weight: normal; font-size: 1.2em; color: #fff; padding: 0.3em 0.5em; cursor: pointer; text-transform: lowercase; }
-.button:hover,
-.button:focus { background-color: #30a1e6; }
-.button.icon:before { display: inline-block; content: ''; font-family: FontAwesome; margin: 0 10px 0 0; font-size: 1.5em; line-height: 0;
-    position: relative; top: 2px; }
-.button.selected { background: #fff; color: #0081c6; }
+button,
+.button { font-family: 'Quicksand', sans-serif; }
+
 
 

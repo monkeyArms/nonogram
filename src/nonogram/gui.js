@@ -66,29 +66,35 @@ Nonogram.Gui = class
 			const container = document.querySelector( '[data-nonogram-game-controls]' ),
 				  node      = template.getNode()
 			;
-			let fill, negative;
+			let fillModeCheckbox;
 
 			// insert template
 			container.innerHtml = container.textContent = '';
 			container.appendChild( node );
 
 			// add event handlers
-			fill     = document.querySelector( '[data-nonogram-fill-squares]' );
-			negative = document.querySelector( '[data-nonogram-negate-squares]' );
+			fillModeCheckbox = document.querySelector( '#nonogram-puzzle-fill-mode' );
 
 
-			fill.addEventListener( 'click', ( e ) =>
+			fillModeCheckbox.addEventListener( 'change', () =>
 			{
-				self.playerClickMode = 1;
-				fill.classList.add( 'selected' );
-				negative.classList.remove( 'selected' );
-			} );
+				const fillModeLabel = document.querySelector( '[for="nonogram-puzzle-fill-mode"]' ),
+					  prevActive    = fillModeLabel.querySelector( '.active' ),
+					  prevInactive  = fillModeLabel.querySelector( '.inactive' )
+				;
 
-			negative.addEventListener( 'click', ( e ) =>
-			{
-				self.playerClickMode = 0;
-				negative.classList.add( 'selected' );
-				fill.classList.remove( 'selected' );
+				prevActive.classList.remove( 'active' );
+				prevActive.classList.add( 'inactive' );
+				prevInactive.classList.remove( 'inactive' );
+				prevInactive.classList.add( 'active' );
+
+				if (fillModeCheckbox.checked) {
+					fillModeLabel.classList.add( 'on' );
+					self.playerClickMode = 0;
+				} else {
+					fillModeLabel.classList.remove( 'on' );
+					self.playerClickMode = 1;
+				}
 			} );
 		} );
 	}
@@ -160,12 +166,12 @@ Nonogram.Gui = class
 				self.makePuzzlePlayable();
 			} );
 
-			reset.addEventListener( 'click', ( e ) =>
+			reset.addEventListener( 'click', () =>
 			{
 				self.resetPuzzle();
 			} );
 
-			solve.addEventListener( 'click', ( e ) =>
+			solve.addEventListener( 'click', () =>
 			{
 				if (confirm( 'Are you sure you want to see the answer?' )) {
 					self.drawSolution();
@@ -312,29 +318,23 @@ Nonogram.Gui = class
 	 */
 	makePuzzlePlayable()
 	{
-		const self = this;
-		let $cells, $table, $allCells;
+		const self      = this,
+			  $table    = self.$gridContainer.find( '.nonogram-puzzle-grid' ),
+			  $cells    = self.$gridContainer.find( '.nonogram-puzzle-grid td.puzzle-cell' ),
+			  $allCells = self.$gridContainer.find( '.nonogram-puzzle-grid td' )
+		;
 
+		$cells.off( 'click mouseenter' );
+		$table.off( 'mouseleave' );
 
-		self.playerClickMode             = 1;
-		self.playerMouseDown             = 0;
-		self.lastPlayerModifiedCellIndex = null;
-		self.lastPlayerCellClickValue    = null;
-
-
-		$table    = self.$gridContainer.find( '.nonogram-puzzle-grid' );
-		$cells    = self.$gridContainer.find( '.nonogram-puzzle-grid td.puzzle-cell' );
-		$allCells = self.$gridContainer.find( '.nonogram-puzzle-grid td' );
+		self.playerClickMode = 1;
 
 		$cells.addClass( 'playable' );
 
-
-		$cells.on( 'mouseenter touchmove', function ( e )
+		$cells.on( 'mouseenter', function ()
 		{
 			const row    = $( this ).attr( 'data-row' ),
 				  column = $( this ).attr( 'data-column' );
-			let cellIndex, elem, touch;
-
 
 			$allCells.each( function ()
 			{
@@ -344,101 +344,41 @@ Nonogram.Gui = class
 					$( this ).removeClass( 'row-column-highlight' );
 				}
 			} );
-
-			if (self.playerMouseDown) {
-
-				if (e.originalEvent.touches) {
-					touch     = e.originalEvent.touches[0];
-					elem      = document.elementFromPoint( touch.pageX, touch.pageY - $( window ).scrollTop() );
-					cellIndex = $( elem ).attr( 'data-index' );
-				} else {
-					cellIndex = $( this ).attr( 'data-index' );
-				}
-
-				self.handleUserCellSelection( cellIndex );
-			}
 		} );
 
-		$cells.on( 'mousedown touchstart', function ( e )
+		$cells.on( 'click', function ( e )
 		{
-			const cellIndex = $( this ).attr( 'data-index' ),
-				  cell      = self.puzzle.getCellByIndex( cellIndex );
+			const $cell     = $( this ),
+				  cellIndex = $cell.attr( 'data-index' ),
+				  cell      = self.puzzle.getCellByIndex( cellIndex )
+			;
 
 			e.preventDefault();
-			self.playerMouseDown          = 1;
-			self.lastPlayerCellClickValue = cell.userSolution;
-			self.handleUserCellSelection( cellIndex );
+
+			cell.userSolution = cell.userSolution === self.playerClickMode ? null : self.playerClickMode;
+
+			$cell.removeClass( 'user-solved user-positive user-negative' );
+
+			if (cell.userSolution === 1) {
+				$cell.addClass( 'user-solved user-positive' );
+			} else if (cell.userSolution === 0) {
+				$cell.addClass( 'user-solved user-negative' );
+			}
+
+			$cell.toggleClass( 'flipped' );
+
+			self.drawPreviewSolution( 'userSolution' );
+
+			if (self.puzzle.checkUserSolution()) {
+				self.showPuzzleSolvedAnimation();
+			}
 		} );
 
-		$( 'body' ).on( 'mouseup touchend', function ()
-		{
-			self.playerMouseDown             = 0;
-			self.lastPlayerModifiedCellIndex = null;
-		} );
 
-		$table.on( 'mouseleave touchend', function ()
+		$table.on( 'mouseleave', function ()
 		{
-			self.playerMouseDown             = 0;
-			self.lastPlayerModifiedCellIndex = null;
 			$allCells.removeClass( 'row-column-highlight' );
 		} );
-	}
-
-
-	/**
-	 *
-	 * @param cellIndex
-	 */
-	handleUserCellSelection( cellIndex )
-	{
-		const self  = this,
-			  $cell = self.$gridContainer.find( '.nonogram-puzzle-grid td.puzzle-cell[data-index="' + cellIndex + '"]' );
-		let cell, cellValue;
-
-
-		if (self.playerMouseDown) {
-
-			cell = self.puzzle.getCellByIndex( cellIndex );
-
-			if (self.lastPlayerModifiedCellIndex !== cell.index) {
-
-				if (cell.userSolution === null) {
-					cellValue = self.playerClickMode;
-				} else if (cell.userSolution === 1) {
-					if (self.lastPlayerCellClickValue !== null) {
-						cellValue = self.playerClickMode === 1 ? null : 1;
-					} else {
-						cellValue = 1;
-					}
-				} else {
-					if (self.lastPlayerCellClickValue !== null) {
-						cellValue = self.playerClickMode === 0 ? null : 0;
-					} else {
-						cellValue = 0;
-					}
-				}
-
-				cell.userSolution = cellValue;
-
-				self.lastPlayerModifiedCellIndex = cell.index;
-
-				$cell.removeClass( 'user-solved user-positive user-negative' );
-
-				if (cellValue === 1) {
-					$cell.addClass( 'user-solved user-positive' );
-				} else if (cellValue === 0) {
-					$cell.addClass( 'user-solved user-negative' );
-				}
-
-				$cell.toggleClass( 'flipped' );
-
-				self.drawPreviewSolution( 'userSolution' );
-
-				if (self.puzzle.checkUserSolution()) {
-					self.showPuzzleSolvedAnimation();
-				}
-			}
-		}
 	}
 
 
