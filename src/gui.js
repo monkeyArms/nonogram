@@ -434,6 +434,7 @@ Nonogram.Gui = class
 
 			container.innerHtml = container.textContent = '';
 			container.appendChild( node.querySelector( '[data-nonogram-preview]' ) );
+			
 
 			// draw preview canvas
 

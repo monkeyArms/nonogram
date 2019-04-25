@@ -9,21 +9,21 @@ module.exports = {
 
 	entry: {
 		'nonogram': [
-			path.resolve( __dirname, 'src/nonogram/nonogram.js' ),
-			path.resolve( __dirname, 'src/nonogram/puzzle.js' ),
-			path.resolve( __dirname, 'src/nonogram/puzzle-cell.js' ),
-			path.resolve( __dirname, 'src/nonogram/puzzle-line.js' ),
-			path.resolve( __dirname, 'src/nonogram/utility.js' ),
-			path.resolve( __dirname, 'src/nonogram/creator.js' ),
-			path.resolve( __dirname, 'src/nonogram/solver.js' ),
-			path.resolve( __dirname, 'src/nonogram/gui.js' ),
-			path.resolve( __dirname, 'src/nonogram/gui-template.js' ),
-			path.resolve( __dirname, 'src/nonogram/export.js' ),
+			path.resolve( __dirname, 'src/nonogram.js' ),
+			path.resolve( __dirname, 'src/puzzle.js' ),
+			path.resolve( __dirname, 'src/puzzle-cell.js' ),
+			path.resolve( __dirname, 'src/puzzle-line.js' ),
+			path.resolve( __dirname, 'src/utility.js' ),
+			path.resolve( __dirname, 'src/creator.js' ),
+			path.resolve( __dirname, 'src/solver.js' ),
+			path.resolve( __dirname, 'src/gui.js' ),
+			path.resolve( __dirname, 'src/gui-template.js' ),
+			path.resolve( __dirname, 'src/export.js' ),
 		]
 	},
 
 	output: {
-		path:          `${__dirname}/dist/nonogram`,
+		path:          `${__dirname}/dist/`,
 		publicPath:    'dist/',
 		filename:      '[name].min.js',
 		library:       'Nonogram',
@@ -34,8 +34,8 @@ module.exports = {
 	plugins: [
 		new CopyPlugin( [
 			{
-				from: path.resolve( __dirname, 'src/nonogram/themes' ),
-				to:   path.resolve( __dirname, 'dist/nonogram/themes' )
+				from: path.resolve( __dirname, 'src/themes' ),
+				to:   path.resolve( __dirname, 'dist/themes' )
 			},
 		] )
 	],
