@@ -100,7 +100,7 @@ Nonogram.Creator = class
 				puzzleValid = true;
 				elapsed     = (new Date().getTime() - start) / 1000;
 
-				this.log.push( 'Puzzle is valid.' );
+				this.log.push( 'Puzzle is solvable.' );
 				this.log.push( '-----------------------------------' );
 				this.log.push( 'Puzzle generated in ' + elapsed + ' seconds.' );
 

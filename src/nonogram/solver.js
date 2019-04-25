@@ -23,7 +23,7 @@ Nonogram.Solver = class
 	{
 		this.puzzle = puzzle;
 
-		this.reset();
+		this._reset();
 	}
 
 
@@ -42,7 +42,7 @@ Nonogram.Solver = class
 		;
 
 		if (!self.isReset) {
-			self.reset();
+			self._reset();
 		}
 
 		self.isReset = false;
@@ -102,7 +102,8 @@ Nonogram.Solver = class
 		const self            = this;
 		let minimumStartIndex = 0,
 			maximumStartIndex = line.length - line.minimumSectionLength,
-			i;
+			i
+		;
 
 
 		// no sections
@@ -250,6 +251,7 @@ Nonogram.Solver = class
 			fillRange = null;
 
 			for (i = 0; i < line.cells.length; i++) {
+
 				if (line.cells[i].aiSolution === null) {
 					break;
 				} else if (line.cells[i].aiSolution === 1) {
@@ -259,6 +261,7 @@ Nonogram.Solver = class
 			}
 
 			if (fillRange !== null) {
+
 				for (i = fillRange[0]; i <= fillRange[1]; i++) {
 					if (line.cells[i]) {
 						this.setCellSolution( line.cells[i], 1 );
@@ -274,6 +277,7 @@ Nonogram.Solver = class
 			fillRange = null;
 
 			for (i = line.cells.length - 1; i >= 0; i--) {
+
 				if (line.cells[i].aiSolution === null) {
 					break;
 				} else if (line.cells[i].aiSolution === 1) {
@@ -283,6 +287,7 @@ Nonogram.Solver = class
 			}
 
 			if (fillRange !== null) {
+				
 				for (i = fillRange[0]; i <= fillRange[1]; i++) {
 					if (line.cells[i]) {
 						this.setCellSolution( line.cells[i], 1 );
@@ -370,26 +375,24 @@ Nonogram.Solver = class
 		{
 			let firstNegative, lastNegative;
 
-			if (!section.solved) {
 
-				// only one possible place...
+			// only one possible place...
 
-				if (section.possibleStartIndexes.length === 1) {
+			if (!section.solved && section.possibleStartIndexes.length === 1) {
 
-					// make sure there is a negative cell on either side of the section
+				// make sure there is a negative cell on either side of the section
 
-					firstNegative = section.possibleStartIndexes[0] - 1;
-					lastNegative  = section.possibleStartIndexes[0] + section.length;
+				firstNegative = section.possibleStartIndexes[0] - 1;
+				lastNegative  = section.possibleStartIndexes[0] + section.length;
 
-					if (line.cells[firstNegative] && line.cells[firstNegative].aiSolution === null) {
-						this.setCellSolution( line.cells[firstNegative], 0 );
-					}
-					if (line.cells[lastNegative] && line.cells[lastNegative].aiSolution === null) {
-						this.setCellSolution( line.cells[lastNegative], 0 );
-					}
-
-					section.solved = true;
+				if (line.cells[firstNegative] && line.cells[firstNegative].aiSolution === null) {
+					this.setCellSolution( line.cells[firstNegative], 0 );
 				}
+				if (line.cells[lastNegative] && line.cells[lastNegative].aiSolution === null) {
+					this.setCellSolution( line.cells[lastNegative], 0 );
+				}
+
+				section.solved = true;
 			}
 		} );
 	}
@@ -429,13 +432,13 @@ Nonogram.Solver = class
 	}
 
 
-	//	#############################################################################################	other methods
+	//	#############################################################################################	internal methods
 
 
 	/**
 	 *
 	 */
-	reset()
+	_reset()
 	{
 		const self                  = this,
 			  possibleRowIndexes    = [],
@@ -491,7 +494,7 @@ Nonogram.Solver = class
 
 		self.puzzle.columnHints.forEach( ( columnHint, columnKey ) =>
 		{
-			let line = new Nonogram.PuzzleLine( {
+			const line = new Nonogram.PuzzleLine( {
 				type:   'column',
 				index:  columnKey,
 				length: this.puzzle.height,
@@ -500,7 +503,6 @@ Nonogram.Solver = class
 
 			columnHint.forEach( ( len, index ) =>
 			{
-
 				line.sections.push( {
 					index:                index,
 					length:               len,

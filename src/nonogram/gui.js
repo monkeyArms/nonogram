@@ -75,6 +75,128 @@ Nonogram.Gui = class
 
 
 	/**
+	 * - draw the puzzle ui
+	 *
+	 * @param {Nonogram.Puzzle} puzzle
+	 */
+	drawPuzzle( puzzle )
+	{
+		const self     = this,
+			  template = self._getTemplate( 'puzzleGrid' )
+		;
+
+		self.puzzle        = puzzle;
+		self.gridContainer = document.querySelector( '[data-nonogram-puzzle-grid]' );
+
+
+		if (!self.gridContainer) {
+			return;
+		}
+
+
+		const draw = () =>
+		{
+			const container       = self.gridContainer,
+				  node            = template.getNode(),
+				  theadThTemplate = node.querySelector( '[data-nonogram-puzzle-grid-table-thead-th]' ),
+				  rowTemplate     = node.querySelector( '[data-nonogram-puzzle-grid-table-row]' ),
+				  cellClasses     = {
+					  tl: 0,
+					  tr: self.puzzle.width - 1,
+					  bl: (self.puzzle.width * self.puzzle.height) - self.puzzle.width,
+					  br: (self.puzzle.width * self.puzzle.height) - 1,
+				  }
+			;
+
+			// table header
+			self.puzzle.columnHints.forEach( ( hints, columnIndex ) =>
+			{
+				const clonedTheadThTemplate = document.importNode( theadThTemplate.content, true ),
+					  theadTh               = clonedTheadThTemplate.querySelector( 'th' ),
+					  fillDiv               = theadTh.querySelector( '.fill' );
+
+				theadTh.setAttribute( 'data-column', columnIndex.toString() );
+				theadTh.classList.add( 'hint', 'top' );
+
+				// add hints
+				hints.forEach( ( hint ) =>
+				{
+					let span = document.createElement( 'span' );
+
+					span.textContent = hint;
+					fillDiv.appendChild( span );
+				} );
+
+				theadThTemplate.parentNode.insertBefore( theadTh, theadThTemplate );
+			} );
+
+
+			// table rows
+
+			self.puzzle.grid.forEach( ( row, rowKey ) =>
+			{
+				const cells             = self.puzzle.getRowCells( rowKey ),
+					  clonedRowTemplate = document.importNode( rowTemplate.content, true ),
+					  tr                = clonedRowTemplate.querySelector( 'tr' ),
+					  cellTemplate      = tr.querySelector( '[data-nonogram-puzzle-grid-table-cell]' ),
+					  hintsFillDiv      = tr.querySelector( '[data-row-hints] .fill' )
+				;
+
+				tr.setAttribute( 'data-row', rowKey.toString() );
+
+				// hint cell
+				self.puzzle.rowHints[rowKey].forEach( ( hint ) =>
+				{
+					let span = document.createElement( 'span' );
+
+					span.textContent = hint;
+					hintsFillDiv.appendChild( span );
+				} );
+
+				// grid cells
+				cells.forEach( ( cell ) =>
+				{
+					const clonedCellTemplate = document.importNode( cellTemplate.content, true ),
+						  td                 = clonedCellTemplate.querySelector( 'td' )
+					;
+
+					td.setAttribute( 'data-index', cell.index );
+					td.setAttribute( 'data-column', cell.column );
+					td.setAttribute( 'data-row', cell.row );
+					td.classList.add( 'puzzle-cell', 'flippable' );
+
+					Object.keys( cellClasses ).forEach( ( cssClass ) =>
+					{
+						if (cell.index === cellClasses[cssClass]) {
+							td.classList.add( cssClass );
+						}
+					} );
+
+					tr.appendChild( td );
+				} );
+
+				rowTemplate.parentNode.appendChild( tr );
+			} );
+
+
+			// insert template
+			container.innerHtml = container.textContent = '';
+			container.appendChild( node );
+
+			self._makePuzzlePlayable();
+			self.drawPreview( 'userSolution' );
+		};
+
+		// fire draw method
+		if (!template.isLoaded) {
+			template.loaded( draw );
+		} else {
+			draw();
+		}
+	}
+
+
+	/**
 	 *    - draw the game controls ui
 	 */
 	drawGameControls()
@@ -89,6 +211,11 @@ Nonogram.Gui = class
 				  node      = template.getNode()
 			;
 			let fillModeCheckbox;
+
+
+			if (!container) {
+				return;
+			}
 
 			// insert template
 			container.innerHtml = container.textContent = '';
@@ -155,6 +282,10 @@ Nonogram.Gui = class
 			;
 			let i, clonedWidthOptions, cloneHeightOptions, widthOption, heightOption, generate, reset, solve;
 
+
+			if (!container) {
+				return;
+			}
 
 			// populate width/height select elements
 			for (i = 5; i <= 30; i++) {
@@ -261,6 +392,10 @@ Nonogram.Gui = class
 			  line      = node.querySelector( '[data-nonogram-console-line]' )
 		;
 
+		if (!container) {
+			return;
+		}
+
 		if (self.puzzle.creator instanceof Nonogram.Creator) {
 			self.puzzle.creator.log.forEach( ( text ) =>
 			{
@@ -271,7 +406,6 @@ Nonogram.Gui = class
 				output.appendChild( code );
 			} );
 		}
-
 
 		// insert template
 		container.innerHtml = container.textContent = '';
@@ -328,123 +462,6 @@ Nonogram.Gui = class
 					ctx.fillRect( cell.column * cellSize, cell.row * cellSize, cellSize, cellSize );
 				}
 			} );
-		};
-
-		// fire draw method
-		if (!template.isLoaded) {
-			template.loaded( draw );
-		} else {
-			draw();
-		}
-	}
-
-
-	/**
-	 * - draw the puzzle ui
-	 *
-	 * @param {Nonogram.Puzzle} puzzle
-	 */
-	drawPuzzle( puzzle )
-	{
-		const self     = this,
-			  template = self._getTemplate( 'puzzleGrid' )
-		;
-
-		self.puzzle        = puzzle;
-		self.gridContainer = document.querySelector( '[data-nonogram-puzzle-grid]' );
-
-
-		const draw = () =>
-		{
-			const container       = self.gridContainer,
-				  node            = template.getNode(),
-				  theadThTemplate = node.querySelector( '[data-nonogram-puzzle-grid-table-thead-th]' ),
-				  rowTemplate     = node.querySelector( '[data-nonogram-puzzle-grid-table-row]' ),
-				  cellClasses     = {
-					  tl: 0,
-					  tr: self.puzzle.width - 1,
-					  bl: (self.puzzle.width * self.puzzle.height) - self.puzzle.width,
-					  br: (self.puzzle.width * self.puzzle.height) - 1,
-				  }
-			;
-
-			// table header
-			self.puzzle.columnHints.forEach( ( hints, columnIndex ) =>
-			{
-				const clonedTheadThTemplate = document.importNode( theadThTemplate.content, true ),
-					  theadTh               = clonedTheadThTemplate.querySelector( 'th' ),
-					  fillDiv               = theadTh.querySelector( '.fill' );
-
-				theadTh.setAttribute( 'data-column', columnIndex.toString() );
-				theadTh.classList.add( 'hint', 'top' );
-
-				// add hints
-				hints.forEach( ( hint ) =>
-				{
-					let span = document.createElement( 'span' );
-
-					span.textContent = hint;
-					fillDiv.appendChild( span );
-				} );
-
-				theadThTemplate.parentNode.insertBefore( theadTh, theadThTemplate );
-			} );
-
-
-			// table rows
-
-			self.puzzle.grid.forEach( ( row, rowKey ) =>
-			{
-				const cells             = self.puzzle.getRowCells( rowKey ),
-					  clonedRowTemplate = document.importNode( rowTemplate.content, true ),
-					  tr                = clonedRowTemplate.querySelector( 'tr' ),
-					  cellTemplate      = tr.querySelector( '[data-nonogram-puzzle-grid-table-cell]' ),
-					  hintsFillDiv      = tr.querySelector( '[data-row-hints] .fill' )
-				;
-
-				tr.setAttribute( 'data-row', rowKey.toString() );
-
-				// hint cell
-				self.puzzle.rowHints[rowKey].forEach( ( hint ) =>
-				{
-					let span = document.createElement( 'span' );
-
-					span.textContent = hint;
-					hintsFillDiv.appendChild( span );
-				} );
-
-				// grid cells
-				cells.forEach( ( cell ) =>
-				{
-					const clonedCellTemplate = document.importNode( cellTemplate.content, true ),
-						  td                 = clonedCellTemplate.querySelector( 'td' )
-					;
-
-					td.setAttribute( 'data-index', cell.index );
-					td.setAttribute( 'data-column', cell.column );
-					td.setAttribute( 'data-row', cell.row );
-					td.classList.add( 'puzzle-cell', 'flippable' );
-
-					Object.keys( cellClasses ).forEach( ( cssClass ) =>
-					{
-						if (cell.index === cellClasses[cssClass]) {
-							td.classList.add( cssClass );
-						}
-					} );
-
-					tr.appendChild( td );
-				} );
-
-				rowTemplate.parentNode.appendChild( tr );
-			} );
-
-
-			// insert template
-			container.innerHtml = container.textContent = '';
-			container.appendChild( node );
-
-			self._makePuzzlePlayable();
-			self.drawPreview( 'userSolution' );
 		};
 
 		// fire draw method
@@ -581,7 +598,7 @@ Nonogram.Gui = class
 		;
 
 		// TODO: uncomment confirm ?
-		//if (confirm( 'Are you sure you want to reset the puzzle?' )) {
+		//if (confirm( 'Are you sure you want to _reset the puzzle?' )) {
 
 		self.gridContainer.classList.remove( 'solved' );
 

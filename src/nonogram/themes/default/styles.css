@@ -88,23 +88,28 @@ table.nonogram-puzzle-grid td.preview { padding: 10px; transition: opacity 1s ea
 table.nonogram-puzzle-grid td.puzzle-cell { background: #ccc; }
 table.nonogram-puzzle-grid td.puzzle-cell.playable { cursor: pointer; }
 
+/*
 table.nonogram-puzzle-grid td.puzzle-cell.tl { border-top-left-radius: 10px; }
 table.nonogram-puzzle-grid td.puzzle-cell.tr { border-top-right-radius: 10px; }
 table.nonogram-puzzle-grid td.puzzle-cell.bl { border-bottom-left-radius: 10px; }
 table.nonogram-puzzle-grid td.puzzle-cell.br { border-bottom-right-radius: 10px; }
+*/
+
 
 table.nonogram-puzzle-grid .fill { min-width: 30px; min-height: 30px; padding: 5px; }
 
 table.nonogram-puzzle-grid td.puzzle-cell .fill { }
 
 table.nonogram-puzzle-grid td.puzzle-cell.user-positive .fill,
-table.nonogram-puzzle-grid td.puzzle-cell.solution-positive .fill { background: #222; }
+table.nonogram-puzzle-grid td.puzzle-cell.solution-positive .fill { background: #424242; }
 table.nonogram-puzzle-grid td.puzzle-cell.user-negative .fill,
 table.nonogram-puzzle-grid td.puzzle-cell.solution-negative .fill { background-color: #fff;
     background-position: 50% 50%; background-repeat: no-repeat; background-image: url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' width='32px' height='32px' viewBox='0 0 32 32' enable-background='new 0 0 32 32' xml:space='preserve'%3E%3Cpolygon fill='%23ACACAC' points='26.104,9.521 22.479,5.897 16,12.376 9.522,5.897 5.896,9.522 12.375,16 5.898,22.478 9.522,26.103 16,19.625 22.479,26.103 26.103,22.478 19.625,16 '/%3E%3C/svg%3E%0A");}
 
 table.nonogram-puzzle-grid .hint { vertical-align: bottom; transition: opacity 1s ease;
-    background-color: #ddd; border: 2px solid #fff; border-radius: 10px; }
+    /* background-color: #b8bdc6; color: #fff; */
+    background-color: #fff; color: #444;
+    border: 2px solid #fff; border-radius: 10px; }
 table.nonogram-puzzle-grid .hint .fill { display: flex; align-items: center; justify-content: end; }
 table.nonogram-puzzle-grid .hint.top .fill { flex-direction: column; }
 table.nonogram-puzzle-grid .hint.top { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
@@ -115,7 +120,7 @@ table.nonogram-puzzle-grid .hint.left span { margin: 0 0 0 5px; }
 table.nonogram-puzzle-grid td.row-column-highlight:not(.user-positive):not(.solution-positive) .fill { background-color: #ddeef7; }
 
 /* solved */
-table.nonogram-puzzle-grid.solved td.puzzle-cell.user-positive .fill { background-color: #5dc353; }
+table.nonogram-puzzle-grid.solved td.puzzle-cell.user-positive .fill { background-color: #73ba6c; }
 table.nonogram-puzzle-grid.solved .hint { opacity: 0; }
 
 

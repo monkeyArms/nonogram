@@ -89,28 +89,14 @@
 </div>
 
 
-<!--
-<script src="../src/nonogram/nonogram.js"></script>
-<script src="../src/nonogram/puzzle.js"></script>
-<script src="../src/nonogram/puzzle-cell.js"></script>
-<script src="../src/nonogram/puzzle-line.js"></script>
-<script src="../src/nonogram/utility.js"></script>
-<script src="../src/nonogram/gui.js"></script>
-<script src="../src/nonogram/creator.js"></script>
-<script src="../src/nonogram/solver.js"></script>
-<script src="../src/nonogram/puzzles/predefined.js"></script>
--->
-
-
 <script src="../dist/nonogram/nonogram.min.js"></script>
 
 
 <script>
 
-	const creator = new Nonogram.Creator( 2, 2 ),
-		  puzzle  = creator.createRandom(),
-		  gui     = new Nonogram.Gui()
-	;
+	const creator = new Nonogram.Creator( 5, 5 );
+	const puzzle  = creator.createRandom();
+	const gui     = new Nonogram.Gui();
 
 	gui.draw( puzzle );
 

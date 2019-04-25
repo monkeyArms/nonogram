@@ -5,12 +5,10 @@ const CopyPlugin = require( 'copy-webpack-plugin' );
 module.exports = {
 
 	watch: true,
-	mode:  'development',
+	mode:  'production',
 
 	entry: {
 		'nonogram': [
-			//path.resolve( __dirname, 'src/nonogram/index.js' ),
-
 			path.resolve( __dirname, 'src/nonogram/nonogram.js' ),
 			path.resolve( __dirname, 'src/nonogram/puzzle.js' ),
 			path.resolve( __dirname, 'src/nonogram/puzzle-cell.js' ),
