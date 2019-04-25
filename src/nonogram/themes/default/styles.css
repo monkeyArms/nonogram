@@ -8,12 +8,13 @@
     background-size: auto 50%; background-position: 0.6em 50%; background-repeat: no-repeat; }
 .nonogram-button:hover { background-color: #57606f; }
 
-.nonogram-switch { background: #ddd; width: 100px; height: 36px; position: relative; }
+.nonogram-switch { background: #ddd; width: 100px; height: 36px; position: relative;
+    -webkit-user-select: none; -moz-user-select: none; user-select: none; }
 .nonogram-switch .nonogram-switch-paddle { display: flex; justify-content: space-between; align-items: center; flex-direction: row-reverse;
     height: 100%; padding: 0 10px; cursor: pointer; }
 
 .nonogram-switch .nonogram-switch-paddle:before { content: ''; width: 28px; height: calc(100% - 8px); position: absolute; left: 4px;
-    background: #485160; transition: left 0.3s ease; }
+    background: #485160; transition: left 0.2s ease; }
 .nonogram-switch .nonogram-switch-paddle.on:before { left: calc(100% - 32px); }
 
 .nonogram-switch .nonogram-switch-paddle span { transition: opacity 0.3s; }
@@ -31,7 +32,7 @@
 
 [data-nonogram-game-controls] .fill-type { display: flex; justify-content: center; }
 
-[data-nonogram-game-controls] .shortcuts { text-align: center; font-size: 0.8em; margin: 10px 0; }
+[data-nonogram-game-controls] .shortcuts { text-align: center; font-size: 0.8em; margin: 10px 0; color: #aaa; }
 
 
 /*
@@ -111,10 +112,11 @@ table.nonogram-puzzle-grid .hint.left { border-top-right-radius: 0; border-botto
 table.nonogram-puzzle-grid .hint.left .fill { padding-right: 10px; }
 table.nonogram-puzzle-grid .hint.left span { margin: 0 0 0 5px; }
 
-table.nonogram-puzzle-grid td.row-column-highlight .fill,
-table.nonogram-puzzle-grid td.puzzle-cell.solution-negative.row-column-highlight .fill { background-color: #ddeef7; }
-table.nonogram-puzzle-grid td.puzzle-cell.playable.row-column-highlight.user-positive .fill,
-table.nonogram-puzzle-grid td.puzzle-cell.playable.row-column-highlight.solution-positive .fill { background: #000; }
+table.nonogram-puzzle-grid td.row-column-highlight:not(.user-positive):not(.solution-positive) .fill { background-color: #ddeef7; }
+
+/* solved */
+table.nonogram-puzzle-grid.solved td.puzzle-cell.user-positive .fill { background-color: #5dc353; }
+table.nonogram-puzzle-grid.solved .hint { opacity: 0; }
 
 
 /*

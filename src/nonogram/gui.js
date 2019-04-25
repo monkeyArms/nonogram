@@ -35,7 +35,7 @@ Nonogram.Gui = class
 		self.theme     = theme || 'default';
 		self.themePath = self._resolveThemePath() + '/' + this.theme;
 
-		// load stylesheet
+		// load theme stylesheet
 		self.themeStylesheetPath = self.themePath + '/styles.css';
 		link.rel                 = 'stylesheet';
 		link.type                = 'text/css';
@@ -231,8 +231,8 @@ Nonogram.Gui = class
 	drawConsole()
 	{
 		const self     = this,
-			  template = self._getTemplate( 'console' );
-
+			  template = self._getTemplate( 'console' )
+		;
 
 		const draw = () =>
 		{
@@ -404,7 +404,7 @@ Nonogram.Gui = class
 
 				tr.setAttribute( 'data-row', rowKey.toString() );
 
-				// hints cell
+				// hint cell
 				self.puzzle.rowHints[rowKey].forEach( ( hint ) =>
 				{
 					let span = document.createElement( 'span' );
@@ -464,29 +464,26 @@ Nonogram.Gui = class
 		const self      = this,
 			  filledTds = self.gridContainer.querySelectorAll( 'td.filled' )
 		;
-		let index       = 0;
-
 
 		filledTds.forEach( ( td ) =>
 		{
-			td.classList.remove( 'filled' );
+			td.classList.remove( 'filled', 'solution-positive', 'solution-negative', 'user-positive', 'user-negative', 'flipped' );
 		} );
 
-		self.puzzle.grid.forEach( ( row ) =>
+		self.puzzle.cells.forEach( ( cell ) =>
 		{
-			row.forEach( ( column ) =>
-			{
-				const cellElem = self.gridContainer.querySelector( 'td[data-index="' + index + '"]' );
+			const cellElem = self.gridContainer.querySelector( 'td[data-index="' + cell.index + '"]' );
 
-				if (column === 1) {
-					cellElem.classList.add( 'solution-positive' );
-				} else {
-					cellElem.classList.add( 'solution-negative' );
-				}
+			cell.userSolution = cell.solution;
+			cellElem.classList.add( 'user-solved' );
 
-				index++;
-			} );
+			if (cell.solution === 1) {
+				cellElem.classList.add( 'solution-positive', 'user-positive', 'flipped' );
+			} else {
+				cellElem.classList.add( 'solution-negative', 'user-negative' );
+			}
 		} );
+
 	}
 
 
@@ -543,7 +540,8 @@ Nonogram.Gui = class
 
 				cell.userSolution = cell.userSolution === self.playerClickMode ? null : self.playerClickMode;
 
-				cellElem.classList.remove( 'user-solved', 'user-positive', 'user-negative' );
+				table.classList.remove( 'solved' );
+				cellElem.classList.remove( 'user-solved', 'user-positive', 'user-negative', 'solution-positive', 'solution-negative' );
 
 				if (cell.userSolution === 1) {
 					cellElem.classList.add( 'user-solved', 'user-positive' );
@@ -556,7 +554,7 @@ Nonogram.Gui = class
 				self.drawPreview( 'userSolution' );
 
 				if (self.puzzle.checkUserSolution()) {
-					self._showPuzzleSolvedAnimation();
+					self._showPuzzleSolved();
 				}
 			} );
 		} );
@@ -599,6 +597,8 @@ Nonogram.Gui = class
 
 		self.gridContainer.querySelector( '[data-nonogram-preview-grid]' ).innerHTML = '';
 
+		self.drawPreview( 'userSolution' );
+
 		//}
 	}
 
@@ -606,7 +606,7 @@ Nonogram.Gui = class
 	/**
 	 *
 	 */
-	_showPuzzleSolvedAnimation()
+	_showPuzzleSolved()
 	{
 		const grid = this.gridContainer.querySelector( '.nonogram-puzzle-grid' );
 
@@ -627,7 +627,7 @@ Nonogram.Gui = class
 		} );
 
 		if (!ret) {
-			console.log( '"' + name + '" template not found.' );
+			throw('"' + name + '" template not found.');
 		}
 
 		return ret;
