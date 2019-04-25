@@ -20,10 +20,11 @@ Nonogram.GuiTemplate = class
 	 */
 	constructor( name, path )
 	{
-		this.name            = name;
-		this.path            = path;
-		this.html            = '';
-		this.loadedCallbacks = [];
+		this.name              = name;
+		this.path              = path;
+		this.html              = '';
+		this.onLoadedCallbacks = [];
+		this.isLoaded          = false;
 	}
 
 
@@ -33,16 +34,16 @@ Nonogram.GuiTemplate = class
 	 */
 	loaded( callback )
 	{
-		this.loadedCallbacks.push( callback );
+		this.onLoadedCallbacks.push( callback );
 	}
 
 
 	/**
 	 *
 	 */
-	fireLoaded()
+	fireOnLoaded()
 	{
-		this.loadedCallbacks.forEach( ( callback ) =>
+		this.onLoadedCallbacks.forEach( ( callback ) =>
 		{
 			callback();
 		} );
@@ -62,8 +63,9 @@ Nonogram.GuiTemplate = class
 
 				response.text().then( ( text ) =>
 				{
-					self.html = text;
-					self.fireLoaded();
+					self.html     = text;
+					self.isLoaded = true;
+					self.fireOnLoaded();
 				} );
 
 			} else {

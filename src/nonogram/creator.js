@@ -14,6 +14,7 @@ import Nonogram from './nonogram';
 Nonogram.Creator = class
 {
 	/**
+	 * creates a new puzzle
 	 *
 	 * @param {number} width
 	 * @param {number} height
@@ -26,10 +27,12 @@ Nonogram.Creator = class
 
 
 	/**
-	 * populates the puzzle
+	 * populates the puzzles rows and columns with random, solvable values
 	 *
 	 * @param {number|null} density - a floating point number between 0 and 1 (optional) that controls the percentage of filled cell likelihood.
 	 *                                    If not supplied a random value between 0.2 and 0.8 will be generated.
+	 *                                    Note that this does not make a puzzle grid filled in by the percentage,
+	 *                                    rather it's a 'suggestion' that is run through randomization on a cell-by-cell basis.
 	 * @returns {Nonogram.Puzzle|Puzzle|class}
 	 */
 	createRandom( density )
@@ -37,7 +40,7 @@ Nonogram.Creator = class
 		const start      = new Date().getTime();
 		let puzzleValid  = false,
 			densityValid = typeof density === 'number' && density >= 0 && density <= 1,
-			chanceOfCellFill, solutionGrid, rowArray, cellValue, solver, i, elapsed
+			cellsFilled, chanceOfCellFill, solutionGrid, rowArray, cellValue, solver, i, elapsed
 		;
 
 
@@ -46,12 +49,20 @@ Nonogram.Creator = class
 			chanceOfCellFill = densityValid ? density : Nonogram.Utility.getRandomIntBetween( 200, 800 ) / 1000;
 			solutionGrid     = [];
 			rowArray         = [];
+			cellsFilled      = 0;
 
-			this.log.push( 'Creating random ' + this.puzzle.width + 'x' + this.puzzle.height + ' puzzle with density of ' + chanceOfCellFill + '...' );
+			this.log.push( 'Creating random ' +
+				this.puzzle.width + 'x' + this.puzzle.height +
+				' puzzle with density of ' + chanceOfCellFill + '...'
+			);
+
+			// create puzzle grid randomly using density as a factor
 
 			for (i = 0; i < this.puzzle.totalCells; i++) {
 
 				cellValue = Math.random() < chanceOfCellFill ? 1 : 0;
+
+				cellsFilled += cellValue;
 
 				if (i % this.puzzle.width === 0 && i > 0) {
 					solutionGrid.push( rowArray );
@@ -61,12 +72,27 @@ Nonogram.Creator = class
 				rowArray.push( cellValue );
 			}
 
+			// ensure that at least one cell is filled, and that not all of them are
+
+			if (cellsFilled === 0) {
+
+				this.log.push( 'Generated puzzle has no cells filled.  Trying again...' );
+				continue;
+
+			} else if (cellsFilled === this.puzzle.totalCells) {
+
+				this.log.push( 'Generated puzzle has all cells filled.  Trying again...' );
+				continue;
+			}
+
+
+			// populate the solution grid
 			solutionGrid.push( rowArray );
 
-			this.log.push( 'Attempting to solve puzzle to confirm validity...' );
-
+			// populate the grid
 			this.puzzle.createFromGrid( solutionGrid );
 
+			// ensure that puzzle is solvable
 			solver = new Nonogram.Solver( this.puzzle );
 
 			if (solver.solve()) {
@@ -85,6 +111,8 @@ Nonogram.Creator = class
 
 			this.log.push( '-----------------------------------' );
 		}
+
+		this.puzzle.creator = this;
 
 		return this.puzzle;
 	}

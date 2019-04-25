@@ -1,0 +1,194 @@
+/**************************************************
+    basic reset
+**************************************************/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+}
+body {
+    box-sizing: border-box;
+    line-height: 1;
+}
+ol, ul {
+    list-style: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+
+/**************************************************
+    small screens
+**************************************************/
+
+@media only screen {
+
+    /*
+         base typography
+    */
+    body {
+        background: #fff;
+        font-family: 'Quicksand', sans-serif;
+        color: #777;
+        font-size: 16px;
+        line-height: 19px;
+        overflow-y: scroll;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        color: #333;
+        margin: 0 0 16px 0;
+        font-weight: 500;
+        text-transform: lowercase;
+    }
+    h1 {
+        font-size: 32px;
+        line-height: 32px;
+    }
+    a {
+        color: #0081c6;
+    }
+    a:hover, a:focus {
+        color: #30a1e6;
+    }
+    select {
+        font-family: 'Quicksand', sans-serif;
+        padding: 0.6em 0.5em;
+        border: 1px solid #ddd;
+    }
+    button, .button {
+        font-family: 'Quicksand', sans-serif;
+    }
+
+    /*
+        site header
+    */
+    #site-header {
+        background: #f4f4f4;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    #site-header h1 {
+        margin: 0;
+    }
+    #site-header .icon svg path {
+        fill: #bababa;
+        transition: fill 0.2s;
+    }
+    #site-header .icon:hover svg path {
+        fill: #aaa;
+    }
+    #site-header .definition {
+        padding: 0 20px;
+        margin-left: auto;
+    }
+
+    /*
+        content
+    */
+    main {
+        padding: 20px 3.2vw 0;
+    }
+    .wrapper {
+        display: grid;
+        grid-template-columns: [col] 1fr;
+        grid-template-rows: [row] auto [row] auto [row];
+        grid-gap: 30px;
+    }
+    .puzzle {
+        overflow: auto;
+    }
+
+    /*
+        gui
+    */
+    [data-nonogram-game-controls] .shortcuts { display: none; }
+
+}
+
+
+/**************************************************
+    medium screens - min-width 641px
+**************************************************/
+
+@media only screen and (min-width: 40.063em) {
+
+    /*
+        site header
+    */
+    #site-header h1 {
+        font-size: 32px;
+        line-height: 32px;
+    }
+
+    /*
+        content
+    */
+    main {
+        padding: 20px;
+    }
+    .tabs-panel {
+        padding: 16px;
+    }
+    .wrapper {
+        grid-template-columns: [col] 1fr [col] 1fr [col] 1fr;
+        grid-template-rows: [row] auto [row] auto [row];
+        grid-gap: 30px;
+    }
+    .generate-controls {
+        grid-column: col / span 3;
+        grid-row: row 1;
+    }
+    .puzzle {
+        grid-column: col 1 / span 2;
+        grid-row: row 2;
+    }
+    .game-controls {
+        grid-column: col 1 / span 2;
+        grid-row: row 3;
+    }
+    .console {
+        grid-column: 3;
+        grid-row: 2 / span 3;
+    }
+    [data-nonogram-game-reset] {
+        margin-left: auto !important;
+    }
+    .nonogram-console {
+        background: #eee;
+        padding: 20px;
+    }
+}
+
+
+/**************************************************
+    large screens - min-width 1025px
+**************************************************/
+
+@media only screen and (min-width: 64.063em) {
+
+    /*
+        site header
+    */
+    #site-header {
+        padding: 10px 20px;
+    }
+
+    /*
+        content
+    */
+    main {
+        padding: 30px;
+    }
+
+    /*
+     gui
+    */
+    [data-nonogram-game-controls] .shortcuts { display: block; }
+}

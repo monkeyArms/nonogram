@@ -9,14 +9,20 @@ import Nonogram from './nonogram';
  * provides a user interface for interacting with nonogram puzzles
  *
  * @property {Nonogram.Puzzle} this.puzzle
- * @property {int} playerClickMode
+ * @property {HTMLElement} this.gridContainer - container element for the puzzle grid ui
+ * @property {array} this.templates - array of Nonogram.GuiTemplate objects
+ * @property {string|null} this.theme - the theme to use, located in the themes/ directory
+ * @property {string} this.themePath - the path to the specified theme located in themes/{theme}
+ * @property {string} this.themeStylesheetPath - the path to the theme stylesheet located in themes/{theme}/styles.css
+ * @property {string} this.themeTemplatesPath - the path to the theme template directory located in themes/{theme}/templates
+ * @property {int} this.playerClickMode - whether to fill or cross a cell on click
  */
 Nonogram.Gui = class
 {
 
 	/**
 	 *
-	 * @param {string|null} theme
+	 * @param {string|null} theme - the theme to use, located in the themes/ directory
 	 */
 	constructor( theme )
 	{
@@ -27,7 +33,7 @@ Nonogram.Gui = class
 
 		// set up theme
 		self.theme     = theme || 'default';
-		self.themePath = self.resolveThemePath() + '/' + this.theme;
+		self.themePath = self._resolveThemePath() + '/' + this.theme;
 
 		// load stylesheet
 		self.themeStylesheetPath = self.themePath + '/styles.css';
@@ -42,6 +48,8 @@ Nonogram.Gui = class
 			new Nonogram.GuiTemplate( 'gameControls', self.themeTemplatesPath + '/controls-game.html' ),
 			new Nonogram.GuiTemplate( 'generateControls', self.themeTemplatesPath + '/controls-generate.html' ),
 			new Nonogram.GuiTemplate( 'console', self.themeTemplatesPath + '/console.html' ),
+			new Nonogram.GuiTemplate( 'previewGrid', self.themeTemplatesPath + '/preview-grid.html' ),
+			new Nonogram.GuiTemplate( 'puzzleGrid', self.themeTemplatesPath + '/puzzle-grid.html' ),
 		];
 
 		// load templates
@@ -52,16 +60,30 @@ Nonogram.Gui = class
 	}
 
 
+	// ######################################################################################	public drawing methods
+
 	/**
-	 *
+	 * - draw all user interfaces
+	 */
+	draw( puzzle )
+	{
+		this.drawPuzzle( puzzle );
+		this.drawGameControls();
+		this.drawGenerateControls();
+		this.drawConsole();
+	}
+
+
+	/**
+	 *    - draw the game controls ui
 	 */
 	drawGameControls()
 	{
 		const self     = this,
-			  template = self.getTemplate( 'gameControls' );
+			  template = self._getTemplate( 'gameControls' );
 
 
-		template && template.loaded( () =>
+		const draw = () =>
 		{
 			const container = document.querySelector( '[data-nonogram-game-controls]' ),
 				  node      = template.getNode()
@@ -74,7 +96,6 @@ Nonogram.Gui = class
 
 			// add event handlers
 			fillModeCheckbox = document.querySelector( '#nonogram-puzzle-fill-mode' );
-
 
 			fillModeCheckbox.addEventListener( 'change', () =>
 			{
@@ -96,20 +117,34 @@ Nonogram.Gui = class
 					self.playerClickMode = 1;
 				}
 			} );
-		} );
+
+			window.addEventListener( 'keyup', ( e ) =>
+			{
+				if (e.key && e.key === 'x') {
+					fillModeCheckbox.dispatchEvent( new MouseEvent( 'click' ) );
+				}
+			} );
+		};
+
+		// fire draw method
+		if (!template.isLoaded) {
+			template.loaded( draw );
+		} else {
+			draw();
+		}
 	}
 
 
 	/**
-	 *
+	 * - draw puzzle generating/solving/reseting ui
 	 */
 	drawGenerateControls()
 	{
 		const self     = this,
-			  template = self.getTemplate( 'generateControls' );
+			  template = self._getTemplate( 'generateControls' );
 
 
-		template && template.loaded( () =>
+		const draw = () =>
 		{
 			const container     = document.querySelector( '[data-nonogram-generate-controls]' ),
 				  node          = template.getNode(),
@@ -130,6 +165,13 @@ Nonogram.Gui = class
 				widthOption.textContent  = widthOption.value = i;
 				heightOption             = cloneHeightOptions.querySelector( 'option' );
 				heightOption.textContent = heightOption.value = i;
+
+				if (self.puzzle.width === i) {
+					widthOption.setAttribute( 'selected', 'selected' );
+				}
+				if (self.puzzle.height === i) {
+					heightOption.setAttribute( 'selected', 'selected' );
+				}
 
 				widthSelect.appendChild( widthOption );
 				heightSelect.appendChild( heightOption );
@@ -154,67 +196,82 @@ Nonogram.Gui = class
 					  puzzle       = creator.createRandom()
 				;
 
-				// TODO - move this into an init method or something
-
-				this.creator = creator;
-
-				self.drawPuzzle( puzzle );
-				self.drawGameControls();
-				self.drawGenerateControls();
-				self.drawConsole();
-				self.updateConsole();
-				self.makePuzzlePlayable();
+				self.draw( puzzle );
 			} );
 
 			reset.addEventListener( 'click', () =>
 			{
-				self.resetPuzzle();
+				self._resetPuzzle();
 			} );
 
 			solve.addEventListener( 'click', () =>
 			{
-				if (confirm( 'Are you sure you want to see the answer?' )) {
-					self.drawSolution();
-					self.drawPreviewSolution( 'solution' );
-				}
+				// TODO: uncomment confirm ?
+
+				//if (confirm( 'Are you sure you want to see the answer?' )) {
+				self.drawSolution();
+				self.drawPreview( 'solution' );
+				//}
 			} );
-		} );
+		};
+
+
+		// fire draw method
+		if (!template.isLoaded) {
+			template.loaded( draw );
+		} else {
+			draw();
+		}
 	}
 
 
 	/**
-	 *
+	 * - draw the console
 	 */
 	drawConsole()
 	{
 		const self     = this,
-			  template = self.getTemplate( 'console' );
+			  template = self._getTemplate( 'console' );
 
 
-		template && template.loaded( () =>
+		const draw = () =>
 		{
 			self.updateConsole();
-		} );
+		};
+
+		// fire draw method
+		if (!template.isLoaded) {
+			template.loaded( draw );
+		} else {
+			draw();
+		}
 	}
 
 
+	/**
+	 * - update console with Nonogram.Creator log
+	 */
 	updateConsole()
 	{
 		const self      = this,
-			  template  = self.getTemplate( 'console' ),
+			  template  = self._getTemplate( 'console' ),
 			  container = document.querySelector( '[data-nonogram-console]' ),
 			  node      = template.getNode(),
 			  output    = node.querySelector( '[data-nonogram-console-output]' ),
 			  line      = node.querySelector( '[data-nonogram-console-line]' )
 		;
-		let clonedLine, code, i;
 
-		for (i = 0; i < self.creator.log.length; i++) {
-			clonedLine       = document.importNode( line.content, true );
-			code             = clonedLine.querySelector( 'code' );
-			code.textContent = self.creator.log[i];
-			output.appendChild( code );
+		if (self.puzzle.creator instanceof Nonogram.Creator) {
+			self.puzzle.creator.log.forEach( ( text ) =>
+			{
+				const clonedLine = document.importNode( line.content, true ),
+					  code       = clonedLine.querySelector( 'code' );
+
+				code.textContent = text;
+				output.appendChild( code );
+			} );
 		}
+
 
 		// insert template
 		container.innerHtml = container.textContent = '';
@@ -223,188 +280,294 @@ Nonogram.Gui = class
 
 
 	/**
+	 * - draw the preview grid for the current state of the puzzle
+	 *
+	 * @param solutionType
+	 */
+	drawPreview( solutionType )
+	{
+		const self     = this,
+			  template = self._getTemplate( 'previewGrid' )
+		;
+
+		const draw = () =>
+		{
+			const container = document.querySelector( '[data-nonogram-preview-grid]' ),
+				  node      = template.getNode()
+			;
+
+			// insert template
+
+			container.innerHtml = container.textContent = '';
+			container.appendChild( node.querySelector( '[data-nonogram-preview]' ) );
+
+			// draw preview canvas
+
+			const canvas          = document.querySelector( '[data-nonogram-preview-canvas]' ),
+				  ctx             = canvas.getContext( '2d' ),
+				  parentContainer = canvas.parentElement.parentElement.parentElement,
+				  parentWidth     = parentContainer.offsetWidth,
+				  parentHeight    = parentContainer.offsetHeight,
+				  containerRatio  = parentWidth / parentHeight,
+				  puzzleRatio     = self.puzzle.width / self.puzzle.height
+			;
+			let cellSize;
+
+			if (containerRatio > puzzleRatio) {
+				cellSize = Math.floor( parentHeight / self.puzzle.height );
+			} else {
+				cellSize = Math.floor( parentWidth / self.puzzle.width );
+			}
+
+			canvas.width  = cellSize * self.puzzle.width;
+			canvas.height = cellSize * self.puzzle.height;
+
+			self.puzzle.cells.forEach( ( cell ) =>
+			{
+				if (cell[solutionType] === 1) {
+					ctx.fillRect( cell.column * cellSize, cell.row * cellSize, cellSize, cellSize );
+				}
+			} );
+		};
+
+		// fire draw method
+		if (!template.isLoaded) {
+			template.loaded( draw );
+		} else {
+			draw();
+		}
+	}
+
+
+	/**
+	 * - draw the puzzle ui
 	 *
 	 * @param {Nonogram.Puzzle} puzzle
 	 */
 	drawPuzzle( puzzle )
 	{
-		const self         = this;
-		let html           = '',
-			index          = 0,
-			cellClasses    = {},
-			maxColumnHints = 0,
-			markupColumnHints, i, j;
-
-		self.puzzle = puzzle;
-
-
-		this.$gridContainer = $( '[data-nonogram-puzzle-grid]' );
-
-		cellClasses[0]                                                            = 'tl';
-		cellClasses[this.puzzle.width - 1]                                        = 'tr';
-		cellClasses[(this.puzzle.width * this.puzzle.height) - this.puzzle.width] = 'bl';
-		cellClasses[(this.puzzle.width * this.puzzle.height) - 1]                 = 'br';
-
-		markupColumnHints = function ( hints )
-		{
-			let html = '';
-
-			hints.forEach( ( hint ) =>
-			{
-				html += '<span>' + hint + '</span>';
-			} );
-
-			return html;
-		};
-
-
-		html += '<table class="nonogram-puzzle-grid">';
-		html += '<thead>';
-		html += '	<tr>';
-		for (i = 0; i < this.puzzle.width + 1; i++) {
-			if (i === 0) {
-				html += '<th class="preview"></th>';
-			} else {
-				if (this.puzzle.columnHints[i - 1].length > maxColumnHints) {
-					maxColumnHints = this.puzzle.columnHints[i - 1].length;
-				}
-				html += '<th class="hint top" data-column="' + (i - 1) + '">';
-				html += '	<div class="fill">' + markupColumnHints( this.puzzle.columnHints[i - 1] ) + '</div>';
-				html += '</th>';
-			}
-		}
-		html += '	</tr>';
-		html += '</thead>';
-		html += '<tbody>';
-
-		for (j = 0; j < this.puzzle.height; j++) {
-
-			html += '	<tr data-row="' + j + '">';
-
-			for (i = 0; i < this.puzzle.width + 1; i++) {
-				if (i === 0) {
-					html += '<th class="hint left" data-row="' + j + '">';
-					html += '	<div class="fill">' + markupColumnHints( this.puzzle.rowHints[j] ) + '</div>';
-					html += '</th>';
-				} else {
-					html += '<td class="puzzle-cell flippable ' + (cellClasses[index] ? cellClasses[index] : '') + '"';
-					html += '		data-index="' + index + '" data-column="' + (i - 1) + '" data-row="' + j + '">';
-					html += '	<div class="fill"></div>';
-					html += '</td>';
-					index++;
-				}
-			}
-			html += '	</tr>';
-		}
-
-		html += '</tbody>';
-
-		html += '</table>';
-
-
-		self.$gridContainer.html( html );
-
-		self.$gridContainer.find( '.nonogram td.hint.top .fill' ).each( function ()
-		{
-			for (i = $( this ).find( 'span' ).length; i < maxColumnHints; i++) {
-				$( this ).prepend( '<span>&nbsp;</span>' );
-			}
-		} );
-	}
-
-
-	/**
-	 *
-	 */
-	makePuzzlePlayable()
-	{
-		const self      = this,
-			  $table    = self.$gridContainer.find( '.nonogram-puzzle-grid' ),
-			  $cells    = self.$gridContainer.find( '.nonogram-puzzle-grid td.puzzle-cell' ),
-			  $allCells = self.$gridContainer.find( '.nonogram-puzzle-grid td' )
+		const self     = this,
+			  template = self._getTemplate( 'puzzleGrid' )
 		;
 
-		$cells.off( 'click mouseenter' );
-		$table.off( 'mouseleave' );
+		self.puzzle        = puzzle;
+		self.gridContainer = document.querySelector( '[data-nonogram-puzzle-grid]' );
 
-		self.playerClickMode = 1;
 
-		$cells.addClass( 'playable' );
-
-		$cells.on( 'mouseenter', function ()
+		const draw = () =>
 		{
-			const row    = $( this ).attr( 'data-row' ),
-				  column = $( this ).attr( 'data-column' );
-
-			$allCells.each( function ()
-			{
-				if ($( this ).attr( 'data-row' ) === row || $( this ).attr( 'data-column' ) === column) {
-					$( this ).addClass( 'row-column-highlight' );
-				} else {
-					$( this ).removeClass( 'row-column-highlight' );
-				}
-			} );
-		} );
-
-		$cells.on( 'click', function ( e )
-		{
-			const $cell     = $( this ),
-				  cellIndex = $cell.attr( 'data-index' ),
-				  cell      = self.puzzle.getCellByIndex( cellIndex )
+			const container       = self.gridContainer,
+				  node            = template.getNode(),
+				  theadThTemplate = node.querySelector( '[data-nonogram-puzzle-grid-table-thead-th]' ),
+				  rowTemplate     = node.querySelector( '[data-nonogram-puzzle-grid-table-row]' ),
+				  cellClasses     = {
+					  tl: 0,
+					  tr: self.puzzle.width - 1,
+					  bl: (self.puzzle.width * self.puzzle.height) - self.puzzle.width,
+					  br: (self.puzzle.width * self.puzzle.height) - 1,
+				  }
 			;
 
-			e.preventDefault();
+			// table header
+			self.puzzle.columnHints.forEach( ( hints, columnIndex ) =>
+			{
+				const clonedTheadThTemplate = document.importNode( theadThTemplate.content, true ),
+					  theadTh               = clonedTheadThTemplate.querySelector( 'th' ),
+					  fillDiv               = theadTh.querySelector( '.fill' );
 
-			cell.userSolution = cell.userSolution === self.playerClickMode ? null : self.playerClickMode;
+				theadTh.setAttribute( 'data-column', columnIndex.toString() );
+				theadTh.classList.add( 'hint', 'top' );
 
-			$cell.removeClass( 'user-solved user-positive user-negative' );
+				// add hints
+				hints.forEach( ( hint ) =>
+				{
+					let span = document.createElement( 'span' );
 
-			if (cell.userSolution === 1) {
-				$cell.addClass( 'user-solved user-positive' );
-			} else if (cell.userSolution === 0) {
-				$cell.addClass( 'user-solved user-negative' );
-			}
+					span.textContent = hint;
+					fillDiv.appendChild( span );
+				} );
 
-			$cell.toggleClass( 'flipped' );
-
-			self.drawPreviewSolution( 'userSolution' );
-
-			if (self.puzzle.checkUserSolution()) {
-				self.showPuzzleSolvedAnimation();
-			}
-		} );
+				theadThTemplate.parentNode.insertBefore( theadTh, theadThTemplate );
+			} );
 
 
-		$table.on( 'mouseleave', function ()
-		{
-			$allCells.removeClass( 'row-column-highlight' );
-		} );
+			// table rows
+
+			self.puzzle.grid.forEach( ( row, rowKey ) =>
+			{
+				const cells             = self.puzzle.getRowCells( rowKey ),
+					  clonedRowTemplate = document.importNode( rowTemplate.content, true ),
+					  tr                = clonedRowTemplate.querySelector( 'tr' ),
+					  cellTemplate      = tr.querySelector( '[data-nonogram-puzzle-grid-table-cell]' ),
+					  hintsFillDiv      = tr.querySelector( '[data-row-hints] .fill' )
+				;
+
+				tr.setAttribute( 'data-row', rowKey.toString() );
+
+				// hints cell
+				self.puzzle.rowHints[rowKey].forEach( ( hint ) =>
+				{
+					let span = document.createElement( 'span' );
+
+					span.textContent = hint;
+					hintsFillDiv.appendChild( span );
+				} );
+
+				// grid cells
+				cells.forEach( ( cell ) =>
+				{
+					const clonedCellTemplate = document.importNode( cellTemplate.content, true ),
+						  td                 = clonedCellTemplate.querySelector( 'td' )
+					;
+
+					td.setAttribute( 'data-index', cell.index );
+					td.setAttribute( 'data-column', cell.column );
+					td.setAttribute( 'data-row', cell.row );
+					td.classList.add( 'puzzle-cell', 'flippable' );
+
+					Object.keys( cellClasses ).forEach( ( cssClass ) =>
+					{
+						if (cell.index === cellClasses[cssClass]) {
+							td.classList.add( cssClass );
+						}
+					} );
+
+					tr.appendChild( td );
+				} );
+
+				rowTemplate.parentNode.appendChild( tr );
+			} );
+
+
+			// insert template
+			container.innerHtml = container.textContent = '';
+			container.appendChild( node );
+
+			self._makePuzzlePlayable();
+			self.drawPreview( 'userSolution' );
+		};
+
+		// fire draw method
+		if (!template.isLoaded) {
+			template.loaded( draw );
+		} else {
+			draw();
+		}
 	}
 
 
 	/**
-	 *
+	 * - draw the solution to the current puzzle
 	 */
 	drawSolution()
 	{
-		const self = this;
-		let index  = 0,
-			$cell;
+		const self      = this,
+			  filledTds = self.gridContainer.querySelectorAll( 'td.filled' )
+		;
+		let index       = 0;
 
-		self.$gridContainer.find( 'td' ).removeClass( 'filled' );
+
+		filledTds.forEach( ( td ) =>
+		{
+			td.classList.remove( 'filled' );
+		} );
 
 		self.puzzle.grid.forEach( ( row ) =>
 		{
 			row.forEach( ( column ) =>
 			{
-				$cell = self.$gridContainer.find( 'td[data-index="' + index + '"]' );
+				const cellElem = self.gridContainer.querySelector( 'td[data-index="' + index + '"]' );
 
 				if (column === 1) {
-					$cell.addClass( 'solution-positive' );
+					cellElem.classList.add( 'solution-positive' );
 				} else {
-					$cell.addClass( 'solution-negative' );
+					cellElem.classList.add( 'solution-negative' );
 				}
+
 				index++;
+			} );
+		} );
+	}
+
+
+	// ######################################################################################	private methods
+
+	/**
+	 *
+	 */
+	_makePuzzlePlayable()
+	{
+		const self     = this,
+			  table    = self.gridContainer.querySelector( '.nonogram-puzzle-grid' ),
+			  cells    = self.gridContainer.querySelectorAll( '.nonogram-puzzle-grid td.puzzle-cell' ),
+			  allCells = self.gridContainer.querySelectorAll( '.nonogram-puzzle-grid td' )
+		;
+
+		self.playerClickMode = 1;
+
+		// set css classes and event handlers for puzzle cells
+
+		cells.forEach( ( cellElem ) =>
+		{
+			cellElem.classList.add( 'playable' );
+
+			// highlight row/column on mouse hover
+
+			cellElem.addEventListener( 'mouseenter', ( e ) =>
+			{
+				const hoverCell = e.currentTarget,
+					  row       = hoverCell.getAttribute( 'data-row' ),
+					  column    = hoverCell.getAttribute( 'data-column' )
+				;
+
+				allCells.forEach( ( cellElem ) =>
+				{
+					if (cellElem.getAttribute( 'data-row' ) === row || cellElem.getAttribute( 'data-column' ) === column) {
+						cellElem.classList.add( 'row-column-highlight' );
+					} else {
+						cellElem.classList.remove( 'row-column-highlight' );
+					}
+				} );
+			} );
+
+			// mark and store puzzle cell click interactions
+
+			cellElem.addEventListener( 'click', ( e ) =>
+			{
+				const cellElem  = e.currentTarget,
+					  cellIndex = cellElem.getAttribute( 'data-index' ),
+					  cell      = self.puzzle.getCellByIndex( cellIndex )
+				;
+
+				e.preventDefault();
+
+				cell.userSolution = cell.userSolution === self.playerClickMode ? null : self.playerClickMode;
+
+				cellElem.classList.remove( 'user-solved', 'user-positive', 'user-negative' );
+
+				if (cell.userSolution === 1) {
+					cellElem.classList.add( 'user-solved', 'user-positive' );
+				} else if (cell.userSolution === 0) {
+					cellElem.classList.add( 'user-solved', 'user-negative' );
+				}
+
+				cellElem.classList.toggle( 'flipped' );
+
+				self.drawPreview( 'userSolution' );
+
+				if (self.puzzle.checkUserSolution()) {
+					self._showPuzzleSolvedAnimation();
+				}
+			} );
+		} );
+
+		// remove highlighted cells on puzzle grid mouseout
+
+		table.addEventListener( 'mouseleave', () =>
+		{
+			allCells.forEach( ( cellElem ) =>
+			{
+				cellElem.classList.remove( 'row-column-highlight' );
 			} );
 		} );
 	}
@@ -413,85 +576,41 @@ Nonogram.Gui = class
 	/**
 	 *
 	 */
-	resetPuzzle()
+	_resetPuzzle()
 	{
-		const self = this;
+		const self      = this,
+			  cellElems = self.gridContainer.querySelectorAll( '.nonogram-puzzle-grid td.puzzle-cell' )
+		;
 
+		// TODO: uncomment confirm ?
+		//if (confirm( 'Are you sure you want to reset the puzzle?' )) {
 
-		if (confirm( 'Are you sure you want to reset the puzzle?' )) {
+		self.gridContainer.classList.remove( 'solved' );
 
-			self.puzzle.cells.forEach( ( cell ) =>
-			{
-				cell.userSolution = null;
-			} );
+		self.puzzle.cells.forEach( ( cell ) =>
+		{
+			cell.userSolution = null;
+		} );
 
-			self.makePuzzlePlayable();
-			self.$gridContainer.find( '.nonogram-puzzle-grid td.puzzle-cell' ).removeClass( 'user-solved user-positive user-negative solution-positive solution-negative' );
-			self.$gridContainer.find( '.nonogram-puzzle-grid .preview' ).html( '' );
-		}
-	}
+		cellElems.forEach( ( cellElem ) =>
+		{
+			cellElem.classList.remove( 'user-solved', 'user-positive', 'user-negative', 'solution-positive', 'solution-negative' );
+		} );
 
+		self.gridContainer.querySelector( '[data-nonogram-preview-grid]' ).innerHTML = '';
 
-	/**
-	 * @param solutionType
-	 */
-	drawPreviewSolution( solutionType )
-	{
-		const self = this;
-		let index  = 0,
-			html   = '',
-			cell, i, j;
-
-		let $container = this.$gridContainer.find( '.nonogram-puzzle-grid .preview' );
-
-		html += '<table class="nonogram-preview width-' + this.puzzle.width + ' height-' + this.puzzle.height + '">';
-
-		for (j = 0; j < this.puzzle.height; j++) {
-
-			html += '<tr>';
-
-			for (i = 0; i < this.puzzle.width; i++) {
-				cell = self.puzzle.getCellByIndex( index );
-				html += '<td data-index="' + index + '" class="' + (cell[solutionType] ? 'filled' : '') + '"></td>';
-				index++;
-			}
-
-			html += '</tr>';
-		}
-
-		html += '</table>';
-
-
-		$container.html( html );
+		//}
 	}
 
 
 	/**
 	 *
 	 */
-	showPuzzleSolvedAnimation()
+	_showPuzzleSolvedAnimation()
 	{
-		const self = this;
-		let index  = 0,
-			interval,
-			animateCell;
+		const grid = this.gridContainer.querySelector( '.nonogram-puzzle-grid' );
 
-
-		animateCell = function ()
-		{
-			const $cell = self.$gridContainer.find( '.nonogram-puzzle-grid td.puzzle-cell[data-index="' + index + '"]' );
-
-			if (!$cell.length) {
-				clearInterval( interval );
-			} else {
-				$cell.toggleClass( 'flipped' );
-				index++;
-			}
-		};
-
-		interval = setInterval( animateCell, 10 );
-
-		self.$gridContainer.find( '.nonogram-puzzle-grid' ).addClass( 'solved' );
+		grid.classList.add( 'solved' );
 	}
 
 
@@ -500,12 +619,18 @@ Nonogram.Gui = class
 	 * @param name
 	 * @returns {Nonogram.GuiTemplate}
 	 */
-	getTemplate( name )
+	_getTemplate( name )
 	{
-		return this.templates.find( ( template ) =>
+		const ret = this.templates.find( ( template ) =>
 		{
 			return template.name === name;
 		} );
+
+		if (!ret) {
+			console.log( '"' + name + '" template not found.' );
+		}
+
+		return ret;
 	}
 
 
@@ -513,7 +638,7 @@ Nonogram.Gui = class
 	 *
 	 * @returns {string}
 	 */
-	resolveThemePath()
+	_resolveThemePath()
 	{
 		let path = '';
 

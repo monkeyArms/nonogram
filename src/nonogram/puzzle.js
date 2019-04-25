@@ -14,17 +14,22 @@ import Nonogram from './nonogram';
  * @property {array} this.cells
  * @property {array} this.rowHints
  * @property {array} this.columnHints
+ * @property {Nonogram.Creator|null} creator
  * @property {array} this.grid - a multi-dimensional array representing rows and columns.
- *                   for example a 2x2 grid could be represented by [[0,0],[0,0]]
+ *                   for example a 2x2 grid could be represented by [[0,1],[0,0]]
  */
 Nonogram.Puzzle = class
 {
 	/**
-	 * @param {number} width
-	 * @param {number} height
+	 * @param {number} width - an integer >= 1 specifying the number of rows
+	 * @param {number} height - an integer >= 1 specifying the number of columns
 	 */
 	constructor( width, height )
 	{
+		if ((width <= 0 || height <= 0) || (width === 1 && height === 1)) {
+			throw('invalid dimensions: ' + width.toString() + ' x ' + height.toString());
+		}
+
 		this.width      = typeof width === 'number' ? width : parseInt( width.toString(), 10 );
 		this.height     = typeof height === 'number' ? height : parseInt( height.toString(), 10 );
 		this.totalCells = this.width * this.height;
@@ -40,6 +45,7 @@ Nonogram.Puzzle = class
 	{
 		const zeroFill = Nonogram.Utility.getZeroFilledArray;
 
+		this.creator     = null;
 		this.cells       = [];
 		this.rowHints    = [];
 		this.columnHints = [];
@@ -182,7 +188,10 @@ Nonogram.Puzzle = class
 	{
 		return this.cells.every( ( cell ) =>
 		{
-			return !(cell.solution === 1 && cell.userSolution !== 1);
+			// cell.solution will be 0 or 1, but cell.userSolution might be null, 0 or 1
+			const userValue = cell.userSolution === 1 ? 1 : 0;
+
+			return cell.solution === userValue;
 		} );
 	}
 
