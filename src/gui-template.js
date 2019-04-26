@@ -3,8 +3,8 @@ import Nonogram from './nonogram';
 
 /**
  * @class
- * @type {GuiTemplate}
- * @this GuiTemplate
+ * @type {Nonogram.GuiTemplate}
+ * @this Nonogram.GuiTemplate
  *
  * @property {string} name
  * @property {string} path
@@ -51,7 +51,7 @@ Nonogram.GuiTemplate = class
 
 
 	/**
-	 *
+	 * @throws - error if template cannot be loaded
 	 */
 	load()
 	{
@@ -70,7 +70,7 @@ Nonogram.GuiTemplate = class
 
 			} else {
 
-				console.log( 'loading failed for "' + self.path + '"' );
+				throw 'loading failed for "' + self.path + '"';
 			}
 		} );
 	}

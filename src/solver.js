@@ -433,7 +433,7 @@ Nonogram.Solver = class
 	}
 
 
-	//	#############################################################################################	internal methods
+	//	#############################################################################################	private methods
 
 
 	/**
@@ -464,8 +464,6 @@ Nonogram.Solver = class
 		for (i = 0; i < self.puzzle.height; i++) {
 			possibleColumnIndexes.push( i );
 		}
-
-		//console.log( self.puzzle.rowHints );
 
 		self.puzzle.rowHints.forEach( ( rowHints, rowNumber ) =>
 		{
@@ -576,7 +574,7 @@ Nonogram.Solver = class
 	{
 		this.solutionLog.push( {
 			html:     html,
-			cssClass: cssClass
+			cssClass: cssClass || 'info'
 		} );
 	}
 

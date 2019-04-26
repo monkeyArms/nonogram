@@ -113,18 +113,21 @@ table {
         grid-gap: 30px;
     }
 
-    .puzzle {
-        overflow: auto;
-    }
-
     .generate-controls {
         background: #f4f4f4;
         padding: 20px;
     }
 
+    .puzzle {
+        overflow: auto;
+    }
+
     /*
         gui
     */
+    .nonogram-console {
+        background: #f4f4f4;
+    }
     [data-nonogram-game-controls] .shortcuts { display: none; }
 
 }
@@ -151,12 +154,37 @@ table {
         padding: 20px;
     }
 
-    .tabs-panel {
-        padding: 16px;
+    /*
+        gui
+    */
+    .nonogram-console {
+        padding: 20px;
+    }
+}
+
+
+/**************************************************
+    large screens - min-width 1025px
+**************************************************/
+
+@media only screen and (min-width: 64.063em) {
+
+    /*
+        site header
+    */
+    #site-header {
+        padding: 10px 20px;
+    }
+
+    /*
+        content
+    */
+    main {
+        padding: 30px;
     }
 
     .wrapper {
-        grid-template-columns: [col] 1fr [col] 1fr [col] 1fr;
+        grid-template-columns: [col] 1fr [col] 1fr [col] 330px;
         grid-template-rows: [row] auto [row] auto [row];
         grid-gap: 30px;
     }
@@ -181,8 +209,9 @@ table {
         grid-row: 2 / span 3;
     }
 
+
     /*
-        gui
+     gui
     */
     .nonogram-generate-controls {
         display: block;
@@ -197,37 +226,5 @@ table {
         justify-content: space-between;
     }
 
-    .nonogram-console {
-        background: #f4f4f4;
-        padding: 20px;
-    }
-
-
-}
-
-
-/**************************************************
-    large screens - min-width 1025px
-**************************************************/
-
-@media only screen and (min-width: 64.063em) {
-
-    /*
-        site header
-    */
-    #site-header {
-        padding: 10px 20px;
-    }
-
-    /*
-        content
-    */
-    main {
-        padding: 30px;
-    }
-
-    /*
-     gui
-    */
     [data-nonogram-game-controls] .shortcuts { display: block; }
 }

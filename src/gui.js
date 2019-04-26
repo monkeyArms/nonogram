@@ -33,12 +33,12 @@ Nonogram.Gui = class
 
 		// set up board sizes
 		self.boardSizes = [
-			{ name: 'Tiny', handle: 'tiny' },
-			{ name: 'Small', handle: 'small' },
-			{ name: 'Medium', handle: 'medium' },
-			{ name: 'Large', handle: 'large' },
+			{ name: 'Tiny', handle: 'tiny', size: 1 },
+			{ name: 'Small', handle: 'small', size: 2 },
+			{ name: 'Medium', handle: 'medium', size: 3 },
+			{ name: 'Large', handle: 'large', size: 4 },
 		];
-		self.boardSize  = 'medium';
+		self.boardSize  = self.boardSizes[2];
 
 		// set up theme
 		self.theme     = theme || 'default';
@@ -193,7 +193,9 @@ Nonogram.Gui = class
 			container.appendChild( node );
 
 			// set board size
-			document.querySelector( '[data-nonogram-puzzle-grid-table]' ).classList.add( self.boardSize );
+			document.querySelector( '[data-nonogram-puzzle-grid-table]' ).classList.add( self.boardSize.handle );
+
+			self._resizeBoardForAvailableScreen();
 
 			self._makePuzzlePlayable();
 			self.drawPreview( 'userSolution' );
@@ -351,7 +353,7 @@ Nonogram.Gui = class
 				sizeOption.textContent = sizeObj.name;
 
 
-				if (sizeObj.handle === self.boardSize) {
+				if (sizeObj.handle === self.boardSize.handle) {
 					sizeOption.setAttribute( 'selected', 'selected' );
 				}
 
@@ -380,6 +382,7 @@ Nonogram.Gui = class
 				;
 				self.selectedExample = null;
 				self.draw( puzzle );
+				self._resizeBoardForAvailableScreen();
 			} );
 
 			chooseSelect.addEventListener( 'change', () =>
@@ -405,19 +408,19 @@ Nonogram.Gui = class
 
 					if (puzzle) {
 						self.draw( puzzle );
+						self._resizeBoardForAvailableScreen();
 					}
 				}
 			} );
 
 			boardSize.addEventListener( 'change', () =>
 			{
-				const puzzleTable = document.querySelector( '[data-nonogram-puzzle-grid-table]' );
-
-				puzzleTable.classList.remove( 'tiny', 'small', 'medium', 'large' );
-				puzzleTable.classList.add( boardSize.value );
-
-				self.boardSize = boardSize.value;
-				self.drawPreview();
+				self.boardSizes.forEach( ( item ) =>
+				{
+					if (item.handle === boardSize.value) {
+						self._changeBoardSize( item );
+					}
+				} );
 			} );
 
 			reset.addEventListener( 'click', () =>
@@ -432,6 +435,7 @@ Nonogram.Gui = class
 				//if (confirm( 'Are you sure you want to see the answer?' )) {
 				self.drawSolution();
 				self.drawPreview( 'solution' );
+				self._showPuzzleSolved();
 				//}
 			} );
 		};
@@ -597,6 +601,52 @@ Nonogram.Gui = class
 
 	// ######################################################################################	private methods
 
+
+	_changeBoardSize( boardSize )
+	{
+		const self        = this,
+			  puzzleTable = document.querySelector( '[data-nonogram-puzzle-grid-table]' ),
+			  sizeSelect  = document.querySelector( '[data-nonogram-board-size' )
+		;
+
+		puzzleTable.classList.remove( 'tiny', 'small', 'medium', 'large' );
+		puzzleTable.classList.add( boardSize.handle );
+		sizeSelect.value = boardSize.handle;
+
+
+		self.boardSize = boardSize;
+		self.drawPreview();
+	}
+
+
+	_resizeBoardForAvailableScreen()
+	{
+		const self             = this,
+			  table            = self.gridContainer.querySelector( '.nonogram-puzzle-grid' ),
+			  availableWidth   = self.gridContainer.clientWidth,
+			  sortedBoardSizes = self.boardSizes.sort( ( a, b ) =>
+			  {
+				  return a.size > b.size ? -1 : 1;
+			  } )
+		;
+		let i;
+
+		if (table.clientWidth > availableWidth) {
+
+			for (i = 0; i < sortedBoardSizes.length; i++) {
+
+				if (sortedBoardSizes[i].size < self.boardSize.size) {
+					self._changeBoardSize( sortedBoardSizes[i] );
+				}
+
+				if (table.clientWidth <= availableWidth) {
+					break;
+				}
+			}
+		}
+	}
+
+
 	/**
 	 *
 	 */
@@ -635,13 +685,14 @@ Nonogram.Gui = class
 				} );
 			} );
 
-			// mark and store puzzle cell click interactions
+			// add cell click event handler
 
 			cellElem.addEventListener( 'click', ( e ) =>
 			{
 				const cellElem  = e.currentTarget,
 					  cellIndex = cellElem.getAttribute( 'data-index' ),
-					  cell      = self.puzzle.getCellByIndex( cellIndex )
+					  cell      = self.puzzle.getCellByIndex( cellIndex ),
+					  solvedP   = document.querySelector( '[data-nonogram-puzzle-grid-solved]' )
 				;
 
 				e.preventDefault();
@@ -663,6 +714,8 @@ Nonogram.Gui = class
 
 				if (self.puzzle.checkUserSolution()) {
 					self._showPuzzleSolved();
+				} else {
+					solvedP.textContent = '';
 				}
 			} );
 		} );
@@ -684,14 +737,17 @@ Nonogram.Gui = class
 	 */
 	_resetPuzzle()
 	{
-		const self      = this,
-			  cellElems = self.gridContainer.querySelectorAll( '.nonogram-puzzle-grid td.puzzle-cell' )
+		const self       = this,
+			  cellElems  = self.gridContainer.querySelectorAll( '.nonogram-puzzle-grid td.puzzle-cell' ),
+			  puzzleGrid = this.gridContainer.querySelector( '.nonogram-puzzle-grid' ),
+			  solvedP    = document.querySelector( '[data-nonogram-puzzle-grid-solved]' )
 		;
 
 		// TODO: uncomment confirm ?
 		//if (confirm( 'Are you sure you want to _reset the puzzle?' )) {
 
-		self.gridContainer.classList.remove( 'solved' );
+		puzzleGrid.classList.remove( 'solved' );
+		solvedP.textContent = '';
 
 		self.puzzle.cells.forEach( ( cell ) =>
 		{
@@ -716,9 +772,12 @@ Nonogram.Gui = class
 	 */
 	_showPuzzleSolved()
 	{
-		const grid = this.gridContainer.querySelector( '.nonogram-puzzle-grid' );
+		const grid    = this.gridContainer.querySelector( '.nonogram-puzzle-grid' ),
+			  solvedP = document.querySelector( '[data-nonogram-puzzle-grid-solved]' )
+		;
 
 		grid.classList.add( 'solved' );
+		solvedP.textContent = 'Solved!';
 	}
 
 
