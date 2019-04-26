@@ -50,7 +50,7 @@ Nonogram.Gui = class
 		link.type                = 'text/css';
 		link.href                = self.themeStylesheetPath;
 		head.prepend( link );
-		
+
 		// set up templates
 		self.themeTemplatesPath = self.themePath + '/templates';
 		self.templates          = [
@@ -604,18 +604,31 @@ Nonogram.Gui = class
 
 	_changeBoardSize( boardSize )
 	{
-		const self        = this,
-			  puzzleTable = document.querySelector( '[data-nonogram-puzzle-grid-table]' ),
-			  sizeSelect  = document.querySelector( '[data-nonogram-board-size' )
-		;
-
-		puzzleTable.classList.remove( 'tiny', 'small', 'medium', 'large' );
-		puzzleTable.classList.add( boardSize.handle );
-		sizeSelect.value = boardSize.handle;
+		const self     = this,
+			  template = self._getTemplate( 'generateControls' );
 
 
-		self.boardSize = boardSize;
-		self.drawPreview();
+		const doChange = () =>
+		{
+			const puzzleTable = document.querySelector( '[data-nonogram-puzzle-grid-table]' ),
+				  sizeSelect  = document.querySelector( '[data-nonogram-board-size' )
+			;
+
+			puzzleTable.classList.remove( 'tiny', 'small', 'medium', 'large' );
+			puzzleTable.classList.add( boardSize.handle );
+			sizeSelect.value = boardSize.handle;
+
+
+			self.boardSize = boardSize;
+			self.drawPreview();
+		};
+
+		// fire method
+		if (!template.isLoaded) {
+			template.loaded( doChange );
+		} else {
+			doChange();
+		}
 	}
 
 
@@ -631,12 +644,21 @@ Nonogram.Gui = class
 		;
 		let i;
 
+
 		if (table.clientWidth > availableWidth) {
 
 			for (i = 0; i < sortedBoardSizes.length; i++) {
 
 				if (sortedBoardSizes[i].size < self.boardSize.size) {
+
 					self._changeBoardSize( sortedBoardSizes[i] );
+				}
+
+
+				if (self.puzzle.creator) {
+					self.puzzle.creator.log.push( sortedBoardSizes[i].handle +
+						', tableWidth: ' + table.clientWidth + ', availableWidth: ' + availableWidth
+					);
 				}
 
 				if (table.clientWidth <= availableWidth) {
@@ -644,6 +666,8 @@ Nonogram.Gui = class
 				}
 			}
 		}
+
+		self.updateConsole();
 	}
 
 
