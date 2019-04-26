@@ -645,6 +645,7 @@ Nonogram.Gui = class
 		let i;
 
 		console.log( '_resizeBoardForAvailableScreen() fired' );
+		console.log( 'tableWidth: ' + table.clientWidth + ', availableWidth: ' + availableWidth );
 
 
 		if (table.clientWidth > availableWidth) {
