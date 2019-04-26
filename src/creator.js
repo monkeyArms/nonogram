@@ -13,35 +13,39 @@ import Nonogram from './nonogram';
  */
 Nonogram.Creator = class
 {
+
 	/**
-	 * creates a new puzzle
 	 *
-	 * @param {number} width
-	 * @param {number} height
 	 */
-	constructor( width, height )
+	constructor()
 	{
-		this.puzzle = new Nonogram.Puzzle( width, height );
-		this.log    = [];
+		this.log = [];
 	}
 
+
+	// ######################################################################################	public methods
 
 	/**
 	 * populates the puzzles rows and columns with random, solvable values
 	 *
+	 * @param {number} width
+	 * @param {number} height
 	 * @param {number|null} density - a floating point number between 0 and 1 (optional) that controls the percentage of filled cell likelihood.
 	 *                                    If not supplied a random value between 0.2 and 0.8 will be generated.
 	 *                                    Note that this does not make a puzzle grid filled in by the percentage,
 	 *                                    rather it's a 'suggestion' that is run through randomization on a cell-by-cell basis.
 	 * @returns {Nonogram.Puzzle|Puzzle|class}
 	 */
-	createRandom( density )
+	createRandom( width, height, density )
 	{
 		const start      = new Date().getTime();
 		let puzzleValid  = false,
 			densityValid = typeof density === 'number' && density >= 0 && density <= 1,
 			cellsFilled, chanceOfCellFill, solutionGrid, rowArray, cellValue, solver, i, elapsed
 		;
+
+		this.puzzle = new Nonogram.Puzzle( width, height );
+		this.log    = [];
 
 
 		while (puzzleValid === false) {
@@ -90,7 +94,8 @@ Nonogram.Creator = class
 			solutionGrid.push( rowArray );
 
 			// populate the grid
-			this.puzzle.createFromGrid( solutionGrid );
+			this.puzzle = Nonogram.Creator._populatePuzzleFromGrid( this.puzzle, solutionGrid );
+
 
 			// ensure that puzzle is solvable
 			solver = new Nonogram.Solver( this.puzzle );
@@ -116,6 +121,281 @@ Nonogram.Creator = class
 
 		return this.puzzle;
 	}
+
+
+	/**
+	 * - create a puzzle using a grid
+	 *
+	 * @param {array} grid - a multi-dimensional array representing rows and columns.
+	 *                         for example a 2x2 grid could be represented by [[0,1],[0,0]]
+	 * @throws - error if grid is invalid
+	 */
+	createFromGrid( grid )
+	{
+		const self  = this,
+			  start = new Date()
+		;
+		let width   = 0,
+			height  = 0,
+			puzzle, solver, elapsed
+		;
+
+		self.log = [];
+
+		self.log.push( 'creating puzzle from grid array.' );
+
+		// make sure grid is valid and get width & height
+		if (!grid instanceof Array) {
+			throw 'grid is not an array';
+		}
+
+
+		grid.forEach( ( row, rowKey ) =>
+		{
+			if (!row instanceof Array) {
+				throw 'grid is not a multi-dimensional array';
+			}
+
+			if (width === 0) {
+				width = row.length;
+			} else if (row.length !== width) {
+				throw 'row ' + rowKey + ' has an invalid length (' + row.length + ') - expecting ' + width;
+			}
+
+			height++;
+		} );
+
+		self.log.push( 'grid is valid' );
+		self.log.push( 'populating ' + width + 'x' + height + ' puzzle' );
+
+		puzzle = new Nonogram.Puzzle( width, height );
+
+		self.puzzle         = Nonogram.Creator._populatePuzzleFromGrid( puzzle, grid );
+		self.puzzle.creator = self;
+
+		// ensure that puzzle is solvable
+
+		solver = new Nonogram.Solver( this.puzzle );
+
+
+		if (solver.solve()) {
+
+			this.log.push( 'Puzzle is solvable.' );
+			this.log.push( '-----------------------------------' );
+
+		} else {
+
+			this.log.push( 'Puzzle cannot be solved.' );
+			this.log.push( '-----------------------------------' );
+			return false;
+		}
+
+		elapsed = (new Date().getTime() - start) / 1000;
+
+		this.log.push( 'Puzzle built and solved in ' + elapsed + ' seconds.' );
+		this.log.push( '-----------------------------------' );
+
+		return self.puzzle;
+	}
+
+
+	/**
+	 * - create a puzzle from a hint object
+	 *
+	 * @param {object} hints - structured like this:  {
+	 * 									row: [[3], [5], [5], [2, 3], [1, 5], [2, 1, 1], [2, 5], [1, 3]],
+										column: [[1, 3], [4], [], [2, 3], [5, 2], [5, 2], [5, 2], [2, 3]]
+									}
+	 * @param {array} hints.row
+	 * @param {array} hints.column
+	 * @throws - error if hints object is structured incorrectly
+	 */
+	createFromHints( hints )
+	{
+		const self  = this,
+			  start = new Date()
+		;
+		let width, height, puzzle, solver, elapsed;
+
+		self.log = [];
+
+		self.log.push( 'creating puzzle from hints' );
+
+		// make sure row & column properties exist
+
+		if (typeof hints !== 'object' || !hints.row || !hints.column) {
+
+			throw 'parameter passed to createFromHints() must be an object containing "row" and "column" properties';
+
+		} else if (!hints.row instanceof Array || !hints.column instanceof Array) {
+
+			throw 'hints.row or hints.column must be an array.';
+		}
+		self.log.push( 'found row and column hints' );
+
+		width              = hints.column.length;
+		height             = hints.row.length;
+		puzzle             = new Nonogram.Puzzle( width, height );
+		puzzle.rowHints    = hints.row;
+		puzzle.columnHints = hints.column;
+		puzzle.creator     = self;
+
+		self.log.push( 'populating ' + width + 'x' + height + ' puzzle' );
+
+
+		// populate cells array
+
+		puzzle.grid.forEach( ( row, rowKey ) =>
+		{
+			row.forEach( ( column, columnKey ) =>
+			{
+				puzzle.cells.push( new Nonogram.PuzzleCell( {
+					index:  (rowKey * puzzle.width) + columnKey,
+					column: columnKey,
+					row:    rowKey
+				} ) );
+			} );
+		} );
+
+		self.puzzle = puzzle;
+
+
+		// ensure that puzzle is solvable
+
+		solver = new Nonogram.Solver( this.puzzle );
+
+
+		if (solver.solve()) {
+
+			this.log.push( 'Puzzle is solvable.' );
+			this.log.push( '-----------------------------------' );
+
+		} else {
+
+			this.log.push( 'Puzzle cannot be solved.' );
+			this.log.push( '-----------------------------------' );
+			return false;
+		}
+
+		// set solution on puzzle cells
+
+		solver.puzzle.cells.forEach( ( solvedCell, cellIndex ) =>
+		{
+			const puzzleCell = self.puzzle.getCellByIndex( cellIndex );
+
+			puzzleCell.aiSolution = solvedCell.aiSolution;
+			puzzleCell.solution   = solvedCell.aiSolution;
+		} );
+
+		elapsed = (new Date().getTime() - start) / 1000;
+
+		this.log.push( 'Puzzle built and solved in ' + elapsed + ' seconds.' );
+		this.log.push( '-----------------------------------' );
+
+		return self.puzzle;
+	}
+
+
+	// ######################################################################################	private methods
+
+
+	/**
+	 * - populates puzzle.cells, puzzle.rowHints and puzzle.columnHints
+	 *
+	 * @param {Nonogram.Puzzle} puzzle
+	 * @param {array} grid - a multidimensional array
+	 */
+	static _populatePuzzleFromGrid( puzzle, grid )
+	{
+		let columnHints, row, columnKey, cell, currentVal, lastVal;
+
+		puzzle.reset();
+
+		puzzle.grid = grid;
+
+		// populate cells
+
+		puzzle.grid.forEach( function ( row, rowKey )
+		{
+			row.forEach( function ( column, columnKey )
+			{
+				puzzle.cells.push( new Nonogram.PuzzleCell( {
+					index:    (rowKey * puzzle.width) + columnKey,
+					column:   columnKey,
+					row:      rowKey,
+					solution: column
+				} ) );
+			} );
+		} );
+
+		// populate row hints
+
+		puzzle.grid.forEach( ( row, rowKey ) =>
+		{
+			let rowHints = [];
+
+			puzzle.rowHints[rowKey] = [];
+
+			row.forEach( ( column, columnKey ) =>
+			{
+				const currentVal = column,
+					  lastVal    = columnKey > 0 ? puzzle.grid[rowKey][columnKey - 1] : 0
+				;
+
+				if (currentVal === 1 && lastVal === 0) {
+					rowHints.push( 1 );
+				} else if (currentVal === 0 && lastVal === 1) {
+					rowHints.push( 0 );
+				} else if (currentVal === 1 && lastVal === 1) {
+					rowHints[rowHints.length - 1]++;
+				}
+			} );
+
+			// clean up row hints
+
+			rowHints.forEach( ( hint ) =>
+			{
+				if (hint > 0) {
+					puzzle.rowHints[rowKey].push( hint );
+				}
+			} );
+		} );
+
+		// populate column hints
+
+		for (columnKey = 0; columnKey < puzzle.width; columnKey++) {
+
+			puzzle.columnHints[columnKey] = [];
+			columnHints                   = [];
+
+			for (cell = columnKey; cell < puzzle.totalCells; cell += puzzle.width) {
+
+				row        = Math.floor( cell / puzzle.width );
+				currentVal = puzzle.grid[row][columnKey];
+				lastVal    = row > 0 ? puzzle.grid[row - 1][columnKey] : 0;
+
+				if (currentVal === 1 && lastVal === 0) {
+					columnHints.push( 1 );
+				} else if (currentVal === 0 && lastVal === 1) {
+					columnHints.push( 0 );
+				} else if (currentVal === 1 && lastVal === 1) {
+					columnHints[columnHints.length - 1]++;
+				}
+			}
+
+			// clean up column hints
+
+			columnHints.forEach( ( hint ) =>
+			{
+				if (hint > 0) {
+					puzzle.columnHints[columnKey].push( hint );
+				}
+			} );
+		}
+
+		return puzzle;
+	}
+
 
 };
 

@@ -23,10 +23,16 @@ Nonogram.Puzzle = class
 	/**
 	 * @param {number} width - an integer >= 1 specifying the number of rows
 	 * @param {number} height - an integer >= 1 specifying the number of columns
+	 * @throws - error if width or height are invalid
 	 */
 	constructor( width, height )
 	{
-		if ((width <= 0 || height <= 0) || (width === 1 && height === 1)) {
+		if (typeof width === 'undefined' || typeof height === 'undefined') {
+
+			throw('width and height are required constructor parameters.');
+
+		} else if ((width <= 0 || height <= 0) || (width === 1 && height === 1)) {
+
 			throw('invalid dimensions: ' + width.toString() + ' x ' + height.toString());
 		}
 
@@ -52,131 +58,6 @@ Nonogram.Puzzle = class
 		this.grid        = zeroFill( this.height ).map( () =>
 		{
 			return zeroFill( this.width );
-		} );
-	}
-
-
-	/**
-	 * - accepts a multidimensional array
-	 *
-	 * @param {array} grid
-	 */
-	createFromGrid( grid )
-	{
-		const self = this;
-		let columnHints, row, columnKey, cell, currentVal, lastVal;
-
-		self.reset();
-
-		self.grid = grid;
-
-		// populate cells array
-
-		self.grid.forEach( function ( row, rowKey )
-		{
-			row.forEach( function ( column, columnKey )
-			{
-				self.cells.push( new Nonogram.PuzzleCell( {
-					index:    (rowKey * self.width) + columnKey,
-					column:   columnKey,
-					row:      rowKey,
-					solution: column
-				} ) );
-			} );
-		} );
-
-
-		// populate row hints
-		self.grid.forEach( ( row, rowKey ) =>
-		{
-			let rowHints = [];
-
-			self.rowHints[rowKey] = [];
-
-			row.forEach( ( column, columnKey ) =>
-			{
-				const currentVal = column,
-					  lastVal    = columnKey > 0 ? self.grid[rowKey][columnKey - 1] : 0
-				;
-
-				if (currentVal === 1 && lastVal === 0) {
-					rowHints.push( 1 );
-				} else if (currentVal === 0 && lastVal === 1) {
-					rowHints.push( 0 );
-				} else if (currentVal === 1 && lastVal === 1) {
-					rowHints[rowHints.length - 1]++;
-				}
-			} );
-
-			// clean up row hints
-			rowHints.forEach( ( hint ) =>
-			{
-				if (hint > 0) {
-					self.rowHints[rowKey].push( hint );
-				}
-			} );
-		} );
-
-		// populate column hints
-
-		for (columnKey = 0; columnKey < self.width; columnKey++) {
-
-			self.columnHints[columnKey] = [];
-			columnHints                 = [];
-
-			for (cell = columnKey; cell < self.totalCells; cell += self.width) {
-
-				row        = Math.floor( cell / self.width );
-				currentVal = self.grid[row][columnKey];
-				lastVal    = row > 0 ? self.grid[row - 1][columnKey] : 0;
-
-				if (currentVal === 1 && lastVal === 0) {
-					columnHints.push( 1 );
-				} else if (currentVal === 0 && lastVal === 1) {
-					columnHints.push( 0 );
-				} else if (currentVal === 1 && lastVal === 1) {
-					columnHints[columnHints.length - 1]++;
-				}
-			}
-
-			// clean up column hints
-			columnHints.forEach( ( hint ) =>
-			{
-				if (hint > 0) {
-					self.columnHints[columnKey].push( hint );
-				}
-			} );
-		}
-	}
-
-
-	// noinspection JSUnusedGlobalSymbols
-	/**
-	 * @param {object} hints
-	 * @param {array} hints.row
-	 * @param {array} hints.column
-	 */
-	createFromHints( hints )
-	{
-		const self = this;
-
-		self.reset();
-
-		self.rowHints    = hints.row;
-		self.columnHints = hints.column;
-
-		// populate cells array
-
-		self.grid.forEach( ( row, rowKey ) =>
-		{
-			row.forEach( ( column, columnKey ) =>
-			{
-				self.cells.push( new Nonogram.PuzzleCell( {
-					index:  (rowKey * self.width) + columnKey,
-					column: columnKey,
-					row:    rowKey
-				} ) );
-			} );
 		} );
 	}
 

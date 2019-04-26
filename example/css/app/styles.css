@@ -39,27 +39,33 @@ table {
         line-height: 19px;
         overflow-y: scroll;
     }
+
     h1, h2, h3, h4, h5, h6 {
         color: #333;
         margin: 0 0 16px 0;
         font-weight: 500;
         text-transform: lowercase;
     }
+
     h1 {
         font-size: 32px;
         line-height: 32px;
     }
+
     a {
         color: #0081c6;
     }
+
     a:hover, a:focus {
         color: #30a1e6;
     }
+
     select {
         font-family: 'Quicksand', sans-serif;
         padding: 0.6em 0.5em;
         border: 1px solid #ddd;
     }
+
     button, .button {
         font-family: 'Quicksand', sans-serif;
     }
@@ -74,16 +80,20 @@ table {
         justify-content: center;
         align-items: center;
     }
+
     #site-header h1 {
         margin: 0;
     }
+
     #site-header .icon svg path {
         fill: #bababa;
         transition: fill 0.2s;
     }
+
     #site-header .icon:hover svg path {
         fill: #aaa;
     }
+
     #site-header .definition {
         padding: 0 20px;
         margin-left: auto;
@@ -95,14 +105,21 @@ table {
     main {
         padding: 20px 3.2vw 0;
     }
+
     .wrapper {
         display: grid;
         grid-template-columns: [col] 1fr;
         grid-template-rows: [row] auto [row] auto [row];
         grid-gap: 30px;
     }
+
     .puzzle {
         overflow: auto;
+    }
+
+    .generate-controls {
+        background: #f4f4f4;
+        padding: 20px;
     }
 
     /*
@@ -133,37 +150,59 @@ table {
     main {
         padding: 20px;
     }
+
     .tabs-panel {
         padding: 16px;
     }
+
     .wrapper {
         grid-template-columns: [col] 1fr [col] 1fr [col] 1fr;
         grid-template-rows: [row] auto [row] auto [row];
         grid-gap: 30px;
     }
+
     .generate-controls {
-        grid-column: col / span 3;
+        grid-column: 3;
         grid-row: row 1;
     }
+
     .puzzle {
         grid-column: col 1 / span 2;
-        grid-row: row 2;
+        grid-row: row 1 / span 2;
     }
+
     .game-controls {
         grid-column: col 1 / span 2;
         grid-row: row 3;
     }
+
     .console {
         grid-column: 3;
         grid-row: 2 / span 3;
     }
-    [data-nonogram-game-reset] {
-        margin-left: auto !important;
+
+    /*
+        gui
+    */
+    .nonogram-generate-controls {
+        display: block;
     }
+
+    .nonogram-generate-controls > * {
+        margin: 0 0 20px 0;
+    }
+
+    .control-group {
+        display: flex;
+        justify-content: space-between;
+    }
+
     .nonogram-console {
-        background: #eee;
+        background: #f4f4f4;
         padding: 20px;
     }
+
+
 }
 
 

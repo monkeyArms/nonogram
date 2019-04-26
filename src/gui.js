@@ -31,6 +31,15 @@ Nonogram.Gui = class
 			  link = document.createElement( 'link' )
 		;
 
+		// set up board sizes
+		self.boardSizes = [
+			{ name: 'Tiny', handle: 'tiny' },
+			{ name: 'Small', handle: 'small' },
+			{ name: 'Medium', handle: 'medium' },
+			{ name: 'Large', handle: 'large' },
+		];
+		self.boardSize  = 'medium';
+
 		// set up theme
 		self.theme     = theme || 'default';
 		self.themePath = self._resolveThemePath() + '/' + this.theme;
@@ -40,7 +49,7 @@ Nonogram.Gui = class
 		link.rel                 = 'stylesheet';
 		link.type                = 'text/css';
 		link.href                = self.themeStylesheetPath;
-		head.appendChild( link );
+		head.prepend( link );
 
 		// set up templates
 		self.themeTemplatesPath = self.themePath + '/templates';
@@ -183,6 +192,9 @@ Nonogram.Gui = class
 			container.innerHtml = container.textContent = '';
 			container.appendChild( node );
 
+			// set board size
+			document.querySelector( '[data-nonogram-puzzle-grid-table]' ).classList.add( self.boardSize );
+
 			self._makePuzzlePlayable();
 			self.drawPreview( 'userSolution' );
 		};
@@ -263,7 +275,7 @@ Nonogram.Gui = class
 
 
 	/**
-	 * - draw puzzle generating/solving/reseting ui
+	 * - draw puzzle generating/solving/resetting ui
 	 */
 	drawGenerateControls()
 	{
@@ -273,14 +285,19 @@ Nonogram.Gui = class
 
 		const draw = () =>
 		{
-			const container     = document.querySelector( '[data-nonogram-generate-controls]' ),
-				  node          = template.getNode(),
-				  widthSelect   = node.querySelector( '[data-nonogram-generate-width]' ),
-				  heightSelect  = node.querySelector( '[data-nonogram-generate-height]' ),
-				  widthOptions  = node.querySelector( '[data-nonogram-generate-width-options]' ),
-				  heightOptions = node.querySelector( '[data-nonogram-generate-height-options]' )
+			const container           = document.querySelector( '[data-nonogram-generate-controls]' ),
+				  node                = template.getNode(),
+				  widthSelect         = node.querySelector( '[data-nonogram-generate-width]' ),
+				  heightSelect        = node.querySelector( '[data-nonogram-generate-height]' ),
+				  widthOptions        = node.querySelector( '[data-nonogram-generate-width-options]' ),
+				  heightOptions       = node.querySelector( '[data-nonogram-generate-height-options]' ),
+				  chooseExampleSelect = node.querySelector( '[data-nonogram-choose-predefined]' ),
+				  boardSizeSelect     = node.querySelector( '[data-nonogram-board-size]' ),
+				  boardSizeOptions    = node.querySelector( '[data-nonogram-board-size-options]' )
+
 			;
-			let i, clonedWidthOptions, cloneHeightOptions, widthOption, heightOption, generate, reset, solve;
+			let i, clonedWidthOptions, cloneHeightOptions, widthOption, heightOption, clonedExampleOptions,
+				exampleOption, chooseSelect, boardSize, clonedSizeOptions, sizeOption, reset, solve, generate;
 
 
 			if (!container) {
@@ -308,26 +325,99 @@ Nonogram.Gui = class
 				heightSelect.appendChild( heightOption );
 			}
 
+			// populate predefined puzzles
+
+			Object.keys( Nonogram.PuzzleLibrary ).forEach( ( puzzleName ) =>
+			{
+				clonedExampleOptions = document.importNode( widthOptions.content, true );
+				exampleOption        = clonedExampleOptions.querySelector( 'option' );
+
+				exampleOption.textContent = exampleOption.value = puzzleName;
+
+				if (puzzleName === self.selectedExample) {
+					exampleOption.setAttribute( 'selected', 'selected' );
+				}
+
+				chooseExampleSelect.appendChild( exampleOption );
+			} );
+
+			// populate board size
+			self.boardSizes.forEach( ( sizeObj ) =>
+			{
+				clonedSizeOptions = document.importNode( boardSizeOptions.content, true );
+				sizeOption        = clonedSizeOptions.querySelector( 'option' );
+
+				sizeOption.value       = sizeObj.handle;
+				sizeOption.textContent = sizeObj.name;
+
+
+				if (sizeObj.handle === self.boardSize) {
+					sizeOption.setAttribute( 'selected', 'selected' );
+				}
+
+				boardSizeSelect.appendChild( sizeOption );
+			} );
+
 			// insert template
 			container.innerHtml = container.textContent = '';
 			container.appendChild( node );
 
 			// add event handlers
-			generate = document.querySelector( '[data-nonogram-generate-button]' );
-			reset    = document.querySelector( '[data-nonogram-game-reset]' );
-			solve    = document.querySelector( '[data-nonogram-game-solve]' );
+			generate     = document.querySelector( '[data-nonogram-generate-button]' );
+			chooseSelect = document.querySelector( '[data-nonogram-choose-predefined]' );
+			boardSize    = document.querySelector( '[data-nonogram-board-size]' );
+			reset        = document.querySelector( '[data-nonogram-game-reset]' );
+			solve        = document.querySelector( '[data-nonogram-game-solve]' );
 
 			generate.addEventListener( 'click', () =>
 			{
-				const widthSelect  = document.querySelector( '[data-nonogram-generate-width]' ),
-					  heightSelect = document.querySelector( '[data-nonogram-generate-height]' ),
-					  width        = widthSelect.value,
-					  height       = heightSelect.value,
-					  creator      = new Nonogram.Creator( width, height ),
-					  puzzle       = creator.createRandom()
+				const widthSelect    = document.querySelector( '[data-nonogram-generate-width]' ),
+					  heightSelect   = document.querySelector( '[data-nonogram-generate-height]' ),
+					  width          = widthSelect.value,
+					  height         = heightSelect.value,
+					  creator        = new Nonogram.Creator(),
+					  puzzle         = creator.createRandom( width, height, null )
 				;
-
+				self.selectedExample = null;
 				self.draw( puzzle );
+			} );
+
+			chooseSelect.addEventListener( 'change', () =>
+			{
+				const creator = new Nonogram.Creator();
+				let puzzleDef, puzzle;
+
+				if (chooseSelect.value !== '') {
+					Object.keys( Nonogram.PuzzleLibrary ).forEach( ( puzzleName ) =>
+					{
+						if (chooseSelect.value === puzzleName) {
+
+							puzzleDef            = Nonogram.PuzzleLibrary[puzzleName];
+							self.selectedExample = puzzleName;
+
+							if (puzzleDef.solutionGrid) {
+								puzzle = creator.createFromGrid( puzzleDef.solutionGrid );
+							} else if (puzzleDef.hints) {
+								puzzle = creator.createFromHints( puzzleDef.hints );
+							}
+						}
+					} );
+
+					if (puzzle) {
+						self.draw( puzzle );
+					}
+				}
+			} );
+
+			boardSize.addEventListener( 'change', () =>
+			{
+				const puzzleTable = document.querySelector( '[data-nonogram-puzzle-grid-table]' );
+
+				puzzleTable.classList.remove( 'tiny', 'small', 'medium', 'large' );
+				puzzleTable.classList.add( boardSize.value );
+
+				self.boardSize = boardSize.value;
+				self.drawPreview();
 			} );
 
 			reset.addEventListener( 'click', () =>
@@ -402,7 +492,7 @@ Nonogram.Gui = class
 				const clonedLine = document.importNode( line.content, true ),
 					  code       = clonedLine.querySelector( 'code' );
 
-				code.textContent = text;
+				code.textContent = text.toString();
 				output.appendChild( code );
 			} );
 		}
@@ -434,7 +524,7 @@ Nonogram.Gui = class
 
 			container.innerHtml = container.textContent = '';
 			container.appendChild( node.querySelector( '[data-nonogram-preview]' ) );
-			
+
 
 			// draw preview canvas
 
@@ -636,6 +726,7 @@ Nonogram.Gui = class
 	 *
 	 * @param name
 	 * @returns {Nonogram.GuiTemplate}
+	 * @throws - error if template could not be found
 	 */
 	_getTemplate( name )
 	{
@@ -644,8 +735,8 @@ Nonogram.Gui = class
 			return template.name === name;
 		} );
 
-		if (!ret) {
-			throw('"' + name + '" template not found.');
+		if (!ret instanceof Nonogram.GuiTemplate) {
+			throw '"' + name + '" template not found.';
 		}
 
 		return ret;

@@ -18,6 +18,7 @@ module.exports = {
 			path.resolve( __dirname, 'src/solver.js' ),
 			path.resolve( __dirname, 'src/gui.js' ),
 			path.resolve( __dirname, 'src/gui-template.js' ),
+			path.resolve( __dirname, 'src/puzzle-library.js' ),
 			path.resolve( __dirname, 'src/export.js' ),
 		]
 	},

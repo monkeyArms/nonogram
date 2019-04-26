@@ -119,6 +119,7 @@ Nonogram.Solver = class
 		// tighten range if one or more known negative cells start the line
 
 		for (i = 0; i < line.length; i++) {
+
 			if (line.cells[i].aiSolution === 0) {
 				minimumStartIndex++;
 			} else {
@@ -287,7 +288,7 @@ Nonogram.Solver = class
 			}
 
 			if (fillRange !== null) {
-				
+
 				for (i = fillRange[0]; i <= fillRange[1]; i++) {
 					if (line.cells[i]) {
 						this.setCellSolution( line.cells[i], 1 );
@@ -464,31 +465,38 @@ Nonogram.Solver = class
 			possibleColumnIndexes.push( i );
 		}
 
-		self.puzzle.rowHints.forEach( ( rowHint, rowNumber ) =>
-		{
-			let line = new Nonogram.PuzzleLine( {
-				type:   'row',
-				index:  rowNumber,
-				length: self.puzzle.width,
-				cells:  self.puzzle.getRowCells( rowNumber )
-			} );
+		//console.log( self.puzzle.rowHints );
 
-			rowHint.forEach( ( len, index ) =>
-			{
-				line.sections.push( {
-					index:                index,
-					length:               len,
-					possibleStartIndexes: possibleRowIndexes,
-					knownIndexes:         [],
-					solved:               false
+		self.puzzle.rowHints.forEach( ( rowHints, rowNumber ) =>
+		{
+			const rowCells = self.puzzle.getRowCells( rowNumber );
+
+			if (rowCells) {
+
+				let line = new Nonogram.PuzzleLine( {
+					type:   'row',
+					index:  rowNumber,
+					length: self.puzzle.width,
+					cells:  rowCells
 				} );
 
-				line.minimumSectionLength += len + 1;
-			} );
+				rowHints.forEach( ( len, index ) =>
+				{
+					line.sections.push( {
+						index:                index,
+						length:               len,
+						possibleStartIndexes: possibleRowIndexes,
+						knownIndexes:         [],
+						solved:               false
+					} );
 
-			line.minimumSectionLength--;
+					line.minimumSectionLength += len + 1;
+				} );
 
-			self.lines.push( line );
+				line.minimumSectionLength--;
+
+				self.lines.push( line );
+			}
 		} );
 
 

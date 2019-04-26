@@ -1,0 +1,33 @@
+<!--
+
+
+-->
+
+<table class="nonogram-puzzle-grid" data-nonogram-puzzle-grid-table>
+	<thead>
+	<tr>
+		<th class="preview" data-nonogram-preview-grid-container>
+			<div data-nonogram-preview-grid></div>
+		</th>
+		<template data-nonogram-puzzle-grid-table-thead-th>
+			<th class="hint top" data-column>
+				<div class="fill"></div>
+			</th>
+		</template>
+	</tr>
+	</thead>
+	<tbody>
+	<template data-nonogram-puzzle-grid-table-row>
+		<tr data-row>
+			<th class="hint left" data-row data-row-hints>
+				<div class="fill"></div>
+			</th>
+			<template data-nonogram-puzzle-grid-table-cell>
+				<td data-index data-column data-row>
+					<div class="fill"></div>
+				</td>
+			</template>
+		</tr>
+	</template>
+	</tbody>
+</table>

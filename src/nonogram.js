@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /**
  *
- * @type {{Puzzle: Nonogram.Puzzle, Utility: Nonogram.Utility, Solver: Nonogram.Solver, PuzzleCell: Nonogram.PuzzleCell, PuzzleLine: Nonogram.PuzzleLine, Creator: Nonogram.Creator, Gui: Nonogram.Gui, GuiTemplate: Nonogram.GuiTemplate}}
+ * @type {{version: {string}, Puzzle: Nonogram.Puzzle, Utility: Nonogram.Utility, Solver: Nonogram.Solver, PuzzleCell: Nonogram.PuzzleCell, PuzzleLine: Nonogram.PuzzleLine, Creator: Nonogram.Creator, Gui: Nonogram.Gui, GuiTemplate: Nonogram.GuiTemplate, PuzzleLibrary: Nonogram.PuzzleLibrary}}
  * @this Nonogram
  *
  * the global namespace for the nonogram package
@@ -17,6 +17,3 @@
 const Nonogram = {
 	version: '1.0.0'
 };
-
-
-// export default Nonogram;

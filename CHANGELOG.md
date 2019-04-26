@@ -22,6 +22,10 @@
  - added `webpack.config.js` and configured build
  - Added `LICENSE` file
  - Removed all JS, CSS and font dependencies
+ - Added theme system
+ - Added ability to load example puzzles
+ - created `README.md`
+ - added index.html file for github page
 
 
 ## 0.1.0
