@@ -1,7 +1,4 @@
 node_modules
-
-# IDE files
+design-builders
 .idea
-
-# other
 .htaccess
