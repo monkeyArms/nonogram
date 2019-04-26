@@ -17,6 +17,10 @@ The original version of this library was written in the fall of 2016 when I disc
 - Fast solving alogorithm that uses human techniques instead of brute force.
 - Simple, themable GUI (optional)
 
+#Demo
+
+[Live Demo](https://monkeyarms.github.io/nonogram/)
+
 ## Basic Usage
 
 (See `example` directory for a simple implementation.)
