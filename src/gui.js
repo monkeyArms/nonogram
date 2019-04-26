@@ -11,6 +11,7 @@ import Nonogram from './nonogram';
  * @property {Nonogram.Puzzle} this.puzzle
  * @property {HTMLElement} this.gridContainer - container element for the puzzle grid ui
  * @property {array} this.templates - array of Nonogram.GuiTemplate objects
+ * @property {array} this.templatesLoaded - array of Promises from each loaded template
  * @property {string|null} this.theme - the theme to use, located in the themes/ directory
  * @property {string} this.themePath - the path to the specified theme located in themes/{theme}
  * @property {string} this.themeStylesheetPath - the path to the theme stylesheet located in themes/{theme}/styles.css
@@ -30,6 +31,7 @@ Nonogram.Gui = class
 			  head = document.querySelector( 'head' ),
 			  link = document.createElement( 'link' )
 		;
+
 
 		// set up board sizes
 		self.boardSizes = [
@@ -52,6 +54,7 @@ Nonogram.Gui = class
 		head.prepend( link );
 
 		// set up templates
+		self.templatesLoaded    = [];
 		self.themeTemplatesPath = self.themePath + '/templates';
 		self.templates          = [
 			new Nonogram.GuiTemplate( 'gameControls', self.themeTemplatesPath + '/controls-game.html' ),
@@ -64,7 +67,9 @@ Nonogram.Gui = class
 		// load templates
 		self.templates.forEach( ( template ) =>
 		{
-			template.load();
+			self.templatesLoaded.push(
+				template.load()
+			);
 		} );
 	}
 
@@ -72,14 +77,21 @@ Nonogram.Gui = class
 	// ######################################################################################	public drawing methods
 
 	/**
-	 * - draw all user interfaces
+	 * - draw all user interfaces once templates are loaded
 	 */
 	draw( puzzle )
 	{
-		this.drawPuzzle( puzzle );
-		this.drawGameControls();
-		this.drawGenerateControls();
-		this.drawConsole();
+		const self = this;
+
+		self.puzzle = puzzle;
+
+		Promise.all( self.templatesLoaded ).then( () =>
+		{
+			self.drawGenerateControls();
+			self.drawPuzzle( puzzle );
+			self.drawGameControls();
+			self.drawConsole();
+		} );
 	}
 
 
@@ -90,21 +102,21 @@ Nonogram.Gui = class
 	 */
 	drawPuzzle( puzzle )
 	{
-		const self     = this,
-			  template = self._getTemplate( 'puzzleGrid' )
-		;
-
-		self.puzzle        = puzzle;
-		self.gridContainer = document.querySelector( '[data-nonogram-puzzle-grid]' );
+		const self = this;
 
 
-		if (!self.gridContainer) {
-			return;
-		}
-
-
-		const draw = () =>
+		Promise.all( self.templatesLoaded ).then( () =>
 		{
+			const template = self._getTemplate( 'puzzleGrid' );
+
+			self.puzzle        = puzzle;
+			self.gridContainer = document.querySelector( '[data-nonogram-puzzle-grid]' );
+
+
+			if (!self.gridContainer) {
+				return;
+			}
+
 			const container       = self.gridContainer,
 				  node            = template.getNode(),
 				  theadThTemplate = node.querySelector( '[data-nonogram-puzzle-grid-table-thead-th]' ),
@@ -196,17 +208,9 @@ Nonogram.Gui = class
 			document.querySelector( '[data-nonogram-puzzle-grid-table]' ).classList.add( self.boardSize.handle );
 
 			self._resizeBoardForAvailableScreen();
-
 			self._makePuzzlePlayable();
 			self.drawPreview( 'userSolution' );
-		};
-
-		// fire draw method
-		if (!template.isLoaded) {
-			template.loaded( draw );
-		} else {
-			draw();
-		}
+		} );
 	}
 
 
@@ -215,13 +219,13 @@ Nonogram.Gui = class
 	 */
 	drawGameControls()
 	{
-		const self     = this,
-			  template = self._getTemplate( 'gameControls' );
+		const self = this;
 
 
-		const draw = () =>
+		Promise.all( self.templatesLoaded ).then( () =>
 		{
-			const container = document.querySelector( '[data-nonogram-game-controls]' ),
+			const template  = self._getTemplate( 'gameControls' ),
+				  container = document.querySelector( '[data-nonogram-game-controls]' ),
 				  node      = template.getNode()
 			;
 			let fillModeCheckbox;
@@ -265,14 +269,7 @@ Nonogram.Gui = class
 					fillModeCheckbox.dispatchEvent( new MouseEvent( 'click' ) );
 				}
 			} );
-		};
-
-		// fire draw method
-		if (!template.isLoaded) {
-			template.loaded( draw );
-		} else {
-			draw();
-		}
+		} );
 	}
 
 
@@ -281,13 +278,13 @@ Nonogram.Gui = class
 	 */
 	drawGenerateControls()
 	{
-		const self     = this,
-			  template = self._getTemplate( 'generateControls' );
+		const self = this;
 
 
-		const draw = () =>
+		Promise.all( self.templatesLoaded ).then( () =>
 		{
-			const container           = document.querySelector( '[data-nonogram-generate-controls]' ),
+			const template            = self._getTemplate( 'generateControls' ),
+				  container           = document.querySelector( '[data-nonogram-generate-controls]' ),
 				  node                = template.getNode(),
 				  widthSelect         = node.querySelector( '[data-nonogram-generate-width]' ),
 				  heightSelect        = node.querySelector( '[data-nonogram-generate-height]' ),
@@ -296,7 +293,6 @@ Nonogram.Gui = class
 				  chooseExampleSelect = node.querySelector( '[data-nonogram-choose-predefined]' ),
 				  boardSizeSelect     = node.querySelector( '[data-nonogram-board-size]' ),
 				  boardSizeOptions    = node.querySelector( '[data-nonogram-board-size-options]' )
-
 			;
 			let i, clonedWidthOptions, cloneHeightOptions, widthOption, heightOption, clonedExampleOptions,
 				exampleOption, chooseSelect, boardSize, clonedSizeOptions, sizeOption, reset, solve, generate;
@@ -438,15 +434,7 @@ Nonogram.Gui = class
 				self._showPuzzleSolved();
 				//}
 			} );
-		};
-
-
-		// fire draw method
-		if (!template.isLoaded) {
-			template.loaded( draw );
-		} else {
-			draw();
-		}
+		} );
 	}
 
 
@@ -455,21 +443,12 @@ Nonogram.Gui = class
 	 */
 	drawConsole()
 	{
-		const self     = this,
-			  template = self._getTemplate( 'console' )
-		;
+		const self = this;
 
-		const draw = () =>
+		Promise.all( self.templatesLoaded ).then( () =>
 		{
 			self.updateConsole();
-		};
-
-		// fire draw method
-		if (!template.isLoaded) {
-			template.loaded( draw );
-		} else {
-			draw();
-		}
+		} );
 	}
 
 
@@ -478,32 +457,37 @@ Nonogram.Gui = class
 	 */
 	updateConsole()
 	{
-		const self      = this,
-			  template  = self._getTemplate( 'console' ),
-			  container = document.querySelector( '[data-nonogram-console]' ),
-			  node      = template.getNode(),
-			  output    = node.querySelector( '[data-nonogram-console-output]' ),
-			  line      = node.querySelector( '[data-nonogram-console-line]' )
-		;
+		const self = this;
 
-		if (!container) {
-			return;
-		}
 
-		if (self.puzzle.creator instanceof Nonogram.Creator) {
-			self.puzzle.creator.log.forEach( ( text ) =>
-			{
-				const clonedLine = document.importNode( line.content, true ),
-					  code       = clonedLine.querySelector( 'code' );
+		Promise.all( self.templatesLoaded ).then( () =>
+		{
+			const template  = self._getTemplate( 'console' ),
+				  container = document.querySelector( '[data-nonogram-console]' ),
+				  node      = template.getNode(),
+				  output    = node.querySelector( '[data-nonogram-console-output]' ),
+				  line      = node.querySelector( '[data-nonogram-console-line]' )
+			;
 
-				code.textContent = text.toString();
-				output.appendChild( code );
-			} );
-		}
+			if (!container) {
+				return;
+			}
 
-		// insert template
-		container.innerHtml = container.textContent = '';
-		container.appendChild( node );
+			if (self.puzzle.creator instanceof Nonogram.Creator) {
+				self.puzzle.creator.log.forEach( ( text ) =>
+				{
+					const clonedLine = document.importNode( line.content, true ),
+						  code       = clonedLine.querySelector( 'code' );
+
+					code.textContent = text.toString();
+					output.appendChild( code );
+				} );
+			}
+
+			// insert template
+			container.innerHtml = container.textContent = '';
+			container.appendChild( node );
+		} );
 	}
 
 
@@ -514,13 +498,13 @@ Nonogram.Gui = class
 	 */
 	drawPreview( solutionType )
 	{
-		const self     = this,
-			  template = self._getTemplate( 'previewGrid' )
-		;
+		const self = this;
 
-		const draw = () =>
+
+		Promise.all( self.templatesLoaded ).then( () =>
 		{
-			const container = document.querySelector( '[data-nonogram-preview-grid]' ),
+			const template  = self._getTemplate( 'previewGrid' ),
+				  container = document.querySelector( '[data-nonogram-preview-grid]' ),
 				  node      = template.getNode()
 			;
 
@@ -557,14 +541,7 @@ Nonogram.Gui = class
 					ctx.fillRect( cell.column * cellSize, cell.row * cellSize, cellSize, cellSize );
 				}
 			} );
-		};
-
-		// fire draw method
-		if (!template.isLoaded) {
-			template.loaded( draw );
-		} else {
-			draw();
-		}
+		} );
 	}
 
 
@@ -573,29 +550,33 @@ Nonogram.Gui = class
 	 */
 	drawSolution()
 	{
-		const self      = this,
-			  filledTds = self.gridContainer.querySelectorAll( 'td.filled' )
-		;
+		const self = this;
 
-		filledTds.forEach( ( td ) =>
+
+		Promise.all( self.templatesLoaded ).then( () =>
 		{
-			td.classList.remove( 'filled', 'solution-positive', 'solution-negative', 'user-positive', 'user-negative', 'flipped' );
+			const filledTds = self.gridContainer.querySelectorAll( 'td.filled' );
+
+
+			filledTds.forEach( ( td ) =>
+			{
+				td.classList.remove( 'filled', 'solution-positive', 'solution-negative', 'user-positive', 'user-negative', 'flipped' );
+			} );
+
+			self.puzzle.cells.forEach( ( cell ) =>
+			{
+				const cellElem = self.gridContainer.querySelector( 'td[data-index="' + cell.index + '"]' );
+
+				cell.userSolution = cell.solution;
+				cellElem.classList.add( 'user-solved' );
+
+				if (cell.solution === 1) {
+					cellElem.classList.add( 'solution-positive', 'user-positive', 'flipped' );
+				} else {
+					cellElem.classList.add( 'solution-negative', 'user-negative' );
+				}
+			} );
 		} );
-
-		self.puzzle.cells.forEach( ( cell ) =>
-		{
-			const cellElem = self.gridContainer.querySelector( 'td[data-index="' + cell.index + '"]' );
-
-			cell.userSolution = cell.solution;
-			cellElem.classList.add( 'user-solved' );
-
-			if (cell.solution === 1) {
-				cellElem.classList.add( 'solution-positive', 'user-positive', 'flipped' );
-			} else {
-				cellElem.classList.add( 'solution-negative', 'user-negative' );
-			}
-		} );
-
 	}
 
 
@@ -604,30 +585,20 @@ Nonogram.Gui = class
 
 	_changeBoardSize( boardSize )
 	{
-		const self     = this,
-			  template = self._getTemplate( 'generateControls' );
+		const self        = this,
+			  puzzleTable = document.querySelector( '[data-nonogram-puzzle-grid-table]' ),
+			  sizeSelect  = document.querySelector( '[data-nonogram-board-size]' )
+		;
 
-
-		const doChange = () =>
-		{
-			const puzzleTable = document.querySelector( '[data-nonogram-puzzle-grid-table]' ),
-				  sizeSelect  = document.querySelector( '[data-nonogram-board-size' )
-			;
+		if (puzzleTable && sizeSelect) {
 
 			puzzleTable.classList.remove( 'tiny', 'small', 'medium', 'large' );
 			puzzleTable.classList.add( boardSize.handle );
 			sizeSelect.value = boardSize.handle;
 
-
 			self.boardSize = boardSize;
-			self.drawPreview();
-		};
 
-		// fire method
-		if (!template.isLoaded) {
-			template.loaded( doChange );
-		} else {
-			doChange();
+			self.drawPreview();
 		}
 	}
 
@@ -644,9 +615,10 @@ Nonogram.Gui = class
 		;
 		let i;
 
-		console.log( '_resizeBoardForAvailableScreen() fired' );
-		console.log( 'tableWidth: ' + table.clientWidth + ', availableWidth: ' + availableWidth );
 
+		if (self.puzzle.creator) {
+			self.puzzle.creator.log.push( 'tableWidth: ' + table.clientWidth + ', availableWidth: ' + availableWidth );
+		}
 
 		if (table.clientWidth > availableWidth) {
 
@@ -659,6 +631,7 @@ Nonogram.Gui = class
 
 
 				if (self.puzzle.creator) {
+
 					self.puzzle.creator.log.push( sortedBoardSizes[i].handle +
 						', tableWidth: ' + table.clientWidth + ', availableWidth: ' + availableWidth
 					);

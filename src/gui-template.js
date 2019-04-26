@@ -10,6 +10,7 @@ import Nonogram from './nonogram';
  * @property {string} path
  * @property {string} html
  * @property {array} loadedCallbacks
+ * @property {Promise} loadedPromise - resolves once template has been loaded and parsed
  */
 Nonogram.GuiTemplate = class
 {
@@ -25,6 +26,7 @@ Nonogram.GuiTemplate = class
 		this.html              = '';
 		this.onLoadedCallbacks = [];
 		this.isLoaded          = false;
+		this.loadedPromise     = null;
 	}
 
 
@@ -43,8 +45,6 @@ Nonogram.GuiTemplate = class
 	 */
 	fireOnLoaded()
 	{
-		console.log( this.name + ' template loaded' );
-		
 		this.onLoadedCallbacks.forEach( ( callback ) =>
 		{
 			callback();
@@ -53,28 +53,39 @@ Nonogram.GuiTemplate = class
 
 
 	/**
+	 * attempts to fetch a template specified by this.path
+	 *
+	 * @returns {Promise} - complete when template has been fetched and parsed
 	 * @throws - error if template cannot be loaded
 	 */
 	load()
 	{
 		const self = this;
 
-		fetch( self.path ).then( ( response ) =>
+
+		self.loadedPromise = new Promise( ( resolve ) =>
 		{
-			if (response.ok) {
+			fetch( self.path ).then( ( response ) =>
+			{
+				if (response.ok) {
 
-				response.text().then( ( text ) =>
-				{
-					self.html     = text;
-					self.isLoaded = true;
-					self.fireOnLoaded();
-				} );
+					response.text().then( ( text ) =>
+					{
+						self.html     = text;
+						self.isLoaded = true;
+						self.fireOnLoaded();
 
-			} else {
+						resolve( self.name + ' loaded and parsed' );
+					} );
 
-				throw 'loading failed for "' + self.path + '"';
-			}
+				} else {
+
+					throw 'loading failed for "' + self.path + '"';
+				}
+			} );
 		} );
+
+		return self.loadedPromise;
 	}
 
 
