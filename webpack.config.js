@@ -1,3 +1,4 @@
+const webpack    = require( 'webpack' );
 const path       = require( 'path' );
 const CopyPlugin = require( 'copy-webpack-plugin' );
 
@@ -5,7 +6,7 @@ const CopyPlugin = require( 'copy-webpack-plugin' );
 module.exports = {
 
 	watch: true,
-	mode:  'production',
+	mode:  'development',
 
 	entry: {
 		'nonogram': [
@@ -38,6 +39,9 @@ module.exports = {
 				from: path.resolve( __dirname, 'src/themes' ),
 				to:   path.resolve( __dirname, 'dist/themes' )
 			},
-		] )
+		] ),
+		new webpack.SourceMapDevToolPlugin( {
+			filename: '[name].js.map',
+		} ),
 	],
 };

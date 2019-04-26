@@ -50,7 +50,7 @@ Nonogram.Gui = class
 		link.type                = 'text/css';
 		link.href                = self.themeStylesheetPath;
 		head.prepend( link );
-
+		
 		// set up templates
 		self.themeTemplatesPath = self.themePath + '/templates';
 		self.templates          = [
