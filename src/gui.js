@@ -644,6 +644,8 @@ Nonogram.Gui = class
 		;
 		let i;
 
+		console.log( '_resizeBoardForAvailableScreen() fired' );
+
 
 		if (table.clientWidth > availableWidth) {
 

@@ -43,6 +43,8 @@ Nonogram.GuiTemplate = class
 	 */
 	fireOnLoaded()
 	{
+		console.log( this.name + ' template loaded' );
+		
 		this.onLoadedCallbacks.forEach( ( callback ) =>
 		{
 			callback();
