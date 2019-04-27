@@ -9,7 +9,7 @@ import Nonogram from './nonogram';
  * creates nonogram puzzles
  *
  * @property {Nonogram.Puzzle} puzzle
- * @property {array} log
+ * @property {array} _log
  * @property {number} creationTime
  * @property {number} solvingTime
  * @property {number} elapsedTime
@@ -48,7 +48,6 @@ Nonogram.Creator = class
 			cellsFilled, chanceOfCellFill, solutionGrid, rowArray, cellValue, solver, i, elapsed
 		;
 
-		chanceOfCellFill = densityValid ? density : Nonogram.Utility.getRandomIntBetween( 200, 800 ) / 1000;
 
 		this.puzzle = new Nonogram.Puzzle( width, height );
 		this._reset();
@@ -56,12 +55,12 @@ Nonogram.Creator = class
 
 		while (puzzleValid === false) {
 
+			chanceOfCellFill = densityValid ? density : Nonogram.Utility.getRandomIntBetween( 200, 800 ) / 1000;
+			solutionGrid     = [];
+			rowArray         = [];
+			cellsFilled      = 0;
 
-			solutionGrid = [];
-			rowArray     = [];
-			cellsFilled  = 0;
-
-			this.log.push( 'Creating random ' +
+			this._log( 'Creating random ' +
 				this.puzzle.width + 'x' + this.puzzle.height +
 				' puzzle with density of ' + chanceOfCellFill + '...'
 			);
@@ -86,12 +85,12 @@ Nonogram.Creator = class
 
 			if (cellsFilled === 0) {
 
-				this.log.push( 'Generated puzzle has no cells filled.  Trying again...' );
+				this._log( 'Generated puzzle has no cells filled.  Trying again...' );
 				continue;
 
 			} else if (cellsFilled === this.puzzle.totalCells) {
 
-				this.log.push( 'Generated puzzle has all cells filled.  Trying again...' );
+				this._log( 'Generated puzzle has all cells filled.  Trying again...' );
 				continue;
 			}
 
@@ -111,9 +110,9 @@ Nonogram.Creator = class
 				puzzleValid = true;
 				elapsed     = (new Date().getTime() - start) / 1000;
 
-				this.log.push( 'Puzzle is solvable - solved in ' + solver.elapsedTime + ' seconds' );
-				this.log.push( '-----------------------------------' );
-				this.log.push( 'Puzzle generated in ' + elapsed + ' seconds.' );
+				this._log( 'Puzzle is solvable - solved in ' + solver.elapsedTime + ' seconds' );
+				this._logLine();
+				this._log( 'Puzzle generated in ' + elapsed + ' seconds.' );
 
 				this.creationTime = elapsed - solver.elapsedTime;
 				this.solvingTime  = solver.elapsedTime;
@@ -121,10 +120,10 @@ Nonogram.Creator = class
 
 			} else {
 
-				this.log.push( 'Puzzle cannot be solved.  Trying again...' );
+				this._log( 'Puzzle cannot be solved.  Trying again...' );
 			}
 
-			this.log.push( '-----------------------------------' );
+			this._logLine();
 		}
 
 		this.puzzle.creator = this;
@@ -150,7 +149,7 @@ Nonogram.Creator = class
 
 		this._reset();
 
-		this.log.push( 'creating puzzle from grid array.' );
+		this._log( 'creating puzzle from grid array.' );
 
 		// make sure grid is valid and get width & height
 		if (!grid instanceof Array) {
@@ -173,8 +172,8 @@ Nonogram.Creator = class
 			height++;
 		} );
 
-		this.log.push( 'grid is valid' );
-		this.log.push( 'populating ' + width + 'x' + height + ' puzzle' );
+		this._log( 'grid is valid' );
+		this._log( 'populating ' + width + 'x' + height + ' puzzle' );
 
 		puzzle = new Nonogram.Puzzle( width, height );
 
@@ -188,20 +187,20 @@ Nonogram.Creator = class
 
 		if (solver.solve()) {
 
-			this.log.push( 'Puzzle is solvable.' );
-			this.log.push( '-----------------------------------' );
+			this._log( 'Puzzle is solvable.' );
+			this._logLine();
 
 		} else {
 
-			this.log.push( 'Puzzle cannot be solved.' );
-			this.log.push( '-----------------------------------' );
+			this._log( 'Puzzle cannot be solved.' );
+			this._logLine();
 			return false;
 		}
 
 		elapsed = (new Date().getTime() - start) / 1000;
 
-		this.log.push( 'Puzzle built and solved in ' + elapsed + ' seconds.' );
-		this.log.push( '-----------------------------------' );
+		this._log( 'Puzzle built and solved in ' + elapsed + ' seconds.' );
+		this._logLine();
 
 		return this.puzzle;
 	}
@@ -225,7 +224,7 @@ Nonogram.Creator = class
 
 		this._reset();
 
-		this.log.push( 'creating puzzle from hints' );
+		this._log( 'creating puzzle from hints' );
 
 		// make sure row & column properties exist
 
@@ -237,7 +236,7 @@ Nonogram.Creator = class
 
 			throw 'hints.row or hints.column must be an array.';
 		}
-		this.log.push( 'found row and column hints' );
+		this._log( 'found row and column hints' );
 
 		width              = hints.column.length;
 		height             = hints.row.length;
@@ -246,7 +245,7 @@ Nonogram.Creator = class
 		puzzle.columnHints = hints.column;
 		puzzle.creator     = this;
 
-		this.log.push( 'populating ' + width + 'x' + height + ' puzzle' );
+		this._log( 'populating ' + width + 'x' + height + ' puzzle' );
 
 
 		// populate cells array
@@ -273,13 +272,13 @@ Nonogram.Creator = class
 
 		if (solver.solve()) {
 
-			this.log.push( 'Puzzle is solvable.' );
-			this.log.push( '-----------------------------------' );
+			this._log( 'Puzzle is solvable.' );
+			this._logLine();
 
 		} else {
 
-			this.log.push( 'Puzzle cannot be solved.' );
-			this.log.push( '-----------------------------------' );
+			this._log( 'Puzzle cannot be solved.' );
+			this._logLine();
 			return false;
 		}
 
@@ -295,8 +294,8 @@ Nonogram.Creator = class
 
 		elapsed = (new Date().getTime() - start) / 1000;
 
-		this.log.push( 'Puzzle built and solved in ' + elapsed + ' seconds.' );
-		this.log.push( '-----------------------------------' );
+		this._log( 'Puzzle built and solved in ' + elapsed + ' seconds.' );
+		this._logLine();
 
 		return this.puzzle;
 	}
@@ -304,49 +303,45 @@ Nonogram.Creator = class
 
 	// ######################################################################################	private methods
 
-
 	/**
-	 * - populates puzzle.cells, puzzle.rowHints and puzzle.columnHints
 	 *
 	 * @param {Nonogram.Puzzle} puzzle
 	 * @param {array} grid - a multidimensional array
+	 * @returns {Nonogram.Puzzle} puzzle
+	 * @private
 	 */
 	static _populatePuzzleFromGrid( puzzle, grid )
 	{
-		let columnHints, row, columnKey, cell, currentVal, lastVal;
+		let columnHints, rowKey, row, columnKey, column, cell, currentVal, lastVal, rowHints, hintKey, hint;
 
 		puzzle.reset();
 
 		puzzle.grid = grid;
 
-		// populate cells
 
-		puzzle.grid.forEach( function ( row, rowKey )
-		{
-			row.forEach( function ( column, columnKey )
-			{
+		for (rowKey = 0; rowKey < puzzle.grid.length; rowKey++) {
+
+			row      = puzzle.grid[rowKey];
+			rowHints = [];
+
+			puzzle.rowHints[rowKey] = [];
+
+			for (columnKey = 0; columnKey < row.length; columnKey++) {
+
+				column     = row[columnKey];
+				currentVal = column;
+				lastVal    = columnKey > 0 ? puzzle.grid[rowKey][columnKey - 1] : 0;
+
+				// populate cells
+
 				puzzle.cells.push( new Nonogram.PuzzleCell( {
 					index:    (rowKey * puzzle.width) + columnKey,
 					column:   columnKey,
 					row:      rowKey,
 					solution: column
 				} ) );
-			} );
-		} );
 
-		// populate row hints
-
-		puzzle.grid.forEach( ( row, rowKey ) =>
-		{
-			let rowHints = [];
-
-			puzzle.rowHints[rowKey] = [];
-
-			row.forEach( ( column, columnKey ) =>
-			{
-				const currentVal = column,
-					  lastVal    = columnKey > 0 ? puzzle.grid[rowKey][columnKey - 1] : 0
-				;
+				// populate row hints
 
 				if (currentVal === 1 && lastVal === 0) {
 					rowHints.push( 1 );
@@ -355,17 +350,19 @@ Nonogram.Creator = class
 				} else if (currentVal === 1 && lastVal === 1) {
 					rowHints[rowHints.length - 1]++;
 				}
-			} );
+			}
 
 			// clean up row hints
 
-			rowHints.forEach( ( hint ) =>
-			{
+			for (hintKey = 0; hintKey < rowHints.length; hintKey++) {
+
+				hint = rowHints[hintKey];
+
 				if (hint > 0) {
 					puzzle.rowHints[rowKey].push( hint );
 				}
-			} );
-		} );
+			}
+		}
 
 		// populate column hints
 
@@ -391,15 +388,49 @@ Nonogram.Creator = class
 
 			// clean up column hints
 
-			columnHints.forEach( ( hint ) =>
-			{
+			for (hintKey = 0; hintKey < columnHints.length; hintKey++) {
+
+				hint = rowHints[hintKey];
+
 				if (hint > 0) {
 					puzzle.columnHints[columnKey].push( hint );
 				}
-			} );
+			}
 		}
 
 		return puzzle;
+	}
+
+
+	/**
+	 *
+	 * @param msg
+	 * @private
+	 */
+	_log( msg )
+	{
+		this.log.push( msg );
+	}
+
+
+	/**
+	 *
+	 * @private
+	 */
+	_logLine()
+	{
+		this.log.push( '-----------------------------------' );
+	}
+
+
+	/**
+	 * @private
+	 */
+	_reset()
+	{
+		this.log          = [];
+		this.creationTime = 0;
+		this.solvingTime  = 0;
 	}
 
 

@@ -45,13 +45,13 @@ Nonogram.Solver = class
 		}
 
 		this.isReset = false;
-		this.log( 'Starting solve algorithm', 'info' );
+		this._log( 'Starting solve algorithm', 'info' );
 
 
-		while (this.getProgress() > lastProgress && this.getTotalSolved() < this.puzzle.cells.length) {
+		while (this._getProgress() > lastProgress && this._getTotalSolved() < this.puzzle.cells.length) {
 
 			passStart    = new Date().getTime();
-			lastProgress = this.getProgress();
+			lastProgress = this._getProgress();
 
 			for (lineKey = 0; lineKey < this.lines.length; lineKey++) {
 
@@ -80,22 +80,22 @@ Nonogram.Solver = class
 			passEnd         = new Date().getTime();
 			passElapsedTime = (passEnd - passStart) / 1000;
 
-			this.log( 'Pass ' + pass + ' completed in ' + passElapsedTime + ' seconds :: '
-				+ this.getTotalSolved() + '/' + this.puzzle.cells.length + ' cells solved', 'info'
+			this._log( 'Pass ' + pass + ' completed in ' + passElapsedTime + ' seconds :: '
+				+ this._getTotalSolved() + '/' + this.puzzle.cells.length + ' cells solved', 'info'
 			);
 			pass++;
 		}
 
-		solved           = this.getTotalSolved() === this.puzzle.cells.length;
+		solved           = this._getTotalSolved() === this.puzzle.cells.length;
 		end              = new Date().getTime();
 		totalElapsedTime = (end - start) / 1000;
 
-		this.log( 'Solve algorithm finished in ' + totalElapsedTime + ' seconds.', 'info' );
+		this._log( 'Solve algorithm finished in ' + totalElapsedTime + ' seconds.', 'info' );
 
 		if (solved) {
-			this.log( 'Solution Found.', 'success' );
+			this._log( 'Solution Found.', 'success' );
 		} else {
-			this.log( 'Could not find solution.', 'failure' );
+			this._log( 'Could not find solution.', 'failure' );
 		}
 
 		this.elapsedTime = totalElapsedTime;
@@ -124,7 +124,7 @@ Nonogram.Solver = class
 		if (line.sections.length === 0) {
 
 			for (lineCellKey = 0; lineCellKey < line.cells.length; lineCellKey++) {
-				this.setCellSolution( line.cells[lineCellKey], 0 );
+				this._setCellSolution( line.cells[lineCellKey], 0 );
 			}
 		}
 
@@ -234,7 +234,7 @@ Nonogram.Solver = class
 				cell      = line.cells[cellCountKey];
 
 				if (cell && cell.aiSolution === null && cellCount === section.possibleStartIndexes.length) {
-					this.setCellSolution( cell, 1 );
+					this._setCellSolution( cell, 1 );
 				}
 			}
 		}
@@ -247,7 +247,7 @@ Nonogram.Solver = class
 			cell      = line.cells[cellCountKey];
 
 			if (cell && cell.aiSolution === null && cellCount === 0) {
-				this.setCellSolution( cell, 0 );
+				this._setCellSolution( cell, 0 );
 			}
 		}
 	}
@@ -285,11 +285,11 @@ Nonogram.Solver = class
 
 				for (i = fillRange[0]; i <= fillRange[1]; i++) {
 					if (line.cells[i]) {
-						this.setCellSolution( line.cells[i], 1 );
+						this._setCellSolution( line.cells[i], 1 );
 					}
 				}
 				if (line.cells[i]) {
-					this.setCellSolution( line.cells[i], 0 );
+					this._setCellSolution( line.cells[i], 0 );
 				}
 			}
 
@@ -311,11 +311,11 @@ Nonogram.Solver = class
 
 				for (i = fillRange[0]; i <= fillRange[1]; i++) {
 					if (line.cells[i]) {
-						this.setCellSolution( line.cells[i], 1 );
+						this._setCellSolution( line.cells[i], 1 );
 					}
 				}
 				if (line.cells[fillRange[0] - 1]) {
-					this.setCellSolution( line.cells[fillRange[0] - 1], 0 );
+					this._setCellSolution( line.cells[fillRange[0] - 1], 0 );
 				}
 			}
 		}
@@ -375,11 +375,11 @@ Nonogram.Solver = class
 			if (chain.length === firstSortedSection.length) {
 
 				if (line.cells[chain.start - 1]) {
-					this.setCellSolution( line.cells[chain.start - 1], 0 );
+					this._setCellSolution( line.cells[chain.start - 1], 0 );
 				}
 
 				if (line.cells[chain.start + firstSortedSection.length]) {
-					this.setCellSolution( line.cells[chain.start + firstSortedSection.length], 0 );
+					this._setCellSolution( line.cells[chain.start + firstSortedSection.length], 0 );
 				}
 
 				firstSortedSection.solved = true;
@@ -413,10 +413,10 @@ Nonogram.Solver = class
 				lastNegative  = section.possibleStartIndexes[0] + section.length;
 
 				if (line.cells[firstNegative] && line.cells[firstNegative].aiSolution === null) {
-					this.setCellSolution( line.cells[firstNegative], 0 );
+					this._setCellSolution( line.cells[firstNegative], 0 );
 				}
 				if (line.cells[lastNegative] && line.cells[lastNegative].aiSolution === null) {
-					this.setCellSolution( line.cells[lastNegative], 0 );
+					this._setCellSolution( line.cells[lastNegative], 0 );
 				}
 
 				section.solved = true;
@@ -457,7 +457,7 @@ Nonogram.Solver = class
 				cell = line.cells[cellKey];
 
 				if (cell.aiSolution === null) {
-					this.setCellSolution( cell, 0 );
+					this._setCellSolution( cell, 0 );
 				}
 			}
 		}
@@ -469,6 +469,7 @@ Nonogram.Solver = class
 
 	/**
 	 *
+	 * @private
 	 */
 	_reset()
 	{
@@ -482,7 +483,7 @@ Nonogram.Solver = class
 		this.solutionLog = [];
 		this.lines       = [];
 
-		this.log( 'Resetting variables', 'info' );
+		this._log( 'Resetting variables', 'info' );
 
 		// reset cell.aiSolution
 
@@ -574,8 +575,9 @@ Nonogram.Solver = class
 	 *
 	 * @param {Nonogram.PuzzleCell} puzzleCell
 	 * @param {number} value
+	 * @private
 	 */
-	setCellSolution( puzzleCell, value )
+	_setCellSolution( puzzleCell, value )
 	{
 		let lineKey, line, isRow, isCol, cellsSolved, cellKey, cell;
 
@@ -616,8 +618,9 @@ Nonogram.Solver = class
 	 *
 	 * @param html
 	 * @param cssClass
+	 * @private
 	 */
-	log( html, cssClass )
+	_log( html, cssClass )
 	{
 		this.solutionLog.push( {
 			html:     html,
@@ -629,8 +632,9 @@ Nonogram.Solver = class
 	/**
 	 *
 	 * @returns {number}
+	 * @private
 	 */
-	getTotalSolved()
+	_getTotalSolved()
 	{
 		let total = 0,
 			cellKey
@@ -645,11 +649,12 @@ Nonogram.Solver = class
 
 
 	/**
-	 * - calculate the maximum # of possible permutations, depending on the current state of the solving process.
+	 * calculate the maximum # of possible permutations, depending on the current state of the solving process.
 	 *
 	 * @returns {number}
+	 * @private
 	 */
-	getProgress()
+	_getProgress()
 	{
 		let maxPossibilities   = 0,
 			totalPossibilities = 0,

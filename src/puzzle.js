@@ -75,7 +75,7 @@ Nonogram.Puzzle = class
 			return cell.solution === userValue;
 		} );
 	}
-
+	
 
 	/**
 	 * @param {number} row

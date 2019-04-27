@@ -426,7 +426,7 @@ Nonogram.Gui = class
 
 
 	/**
-	 * - draw the console and populate with Nonogram.Creator log
+	 * - draw the console and populate with Nonogram.Creator _log
 	 */
 	drawConsole()
 	{
@@ -547,6 +547,11 @@ Nonogram.Gui = class
 	// ######################################################################################	private methods
 
 
+	/**
+	 *
+	 * @param {object} boardSize
+	 * @private
+	 */
 	_changeBoardSize( boardSize )
 	{
 		const puzzleTable = document.querySelector( '[data-nonogram-puzzle-grid-table]' ),
@@ -566,6 +571,10 @@ Nonogram.Gui = class
 	}
 
 
+	/**
+	 *
+	 * @private
+	 */
 	_resizeBoardForAvailableScreen()
 	{
 		const table            = this.gridContainer.querySelector( '.nonogram-puzzle-grid' ),
@@ -578,9 +587,9 @@ Nonogram.Gui = class
 		let i;
 
 
-		if (this.puzzle.creator) {
-			this.puzzle.creator.log.push( 'tableWidth: ' + table.clientWidth + ', availableWidth: ' + availableWidth );
-		}
+		//if (this.puzzle.creator) {
+		//this.puzzle.creator.log.push( 'tableWidth: ' + table.clientWidth + ', availableWidth: ' + availableWidth );
+		//}
 
 		if (table.clientWidth > availableWidth) {
 
@@ -593,9 +602,9 @@ Nonogram.Gui = class
 
 				if (this.puzzle.creator) {
 
-					this.puzzle.creator.log.push( sortedBoardSizes[i].handle +
-						', tableWidth: ' + table.clientWidth + ', availableWidth: ' + availableWidth
-					);
+					//this.puzzle.creator.log.push( sortedBoardSizes[i].handle +
+					//	', tableWidth: ' + table.clientWidth + ', availableWidth: ' + availableWidth
+					//);
 				}
 
 				if (table.clientWidth <= availableWidth) {
@@ -610,6 +619,7 @@ Nonogram.Gui = class
 
 	/**
 	 *
+	 * @private
 	 */
 	_makePuzzlePlayable()
 	{
@@ -694,6 +704,7 @@ Nonogram.Gui = class
 
 	/**
 	 *
+	 * @private
 	 */
 	_resetPuzzle()
 	{
@@ -728,6 +739,7 @@ Nonogram.Gui = class
 
 	/**
 	 *
+	 * @private
 	 */
 	_showPuzzleSolved()
 	{
@@ -751,6 +763,7 @@ Nonogram.Gui = class
 	 * @param name
 	 * @returns {Nonogram.GuiTemplate}
 	 * @throws - error if template could not be found
+	 * @private
 	 */
 	_getTemplate( name )
 	{
@@ -770,6 +783,7 @@ Nonogram.Gui = class
 	/**
 	 *
 	 * @returns {string}
+	 * @private
 	 */
 	_resolveThemePath()
 	{
