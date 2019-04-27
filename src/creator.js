@@ -48,16 +48,18 @@ Nonogram.Creator = class
 			cellsFilled, chanceOfCellFill, solutionGrid, rowArray, cellValue, solver, i, elapsed
 		;
 
+		chanceOfCellFill = densityValid ? density : Nonogram.Utility.getRandomIntBetween( 200, 800 ) / 1000;
+
 		this.puzzle = new Nonogram.Puzzle( width, height );
 		this._reset();
 
 
 		while (puzzleValid === false) {
 
-			chanceOfCellFill = densityValid ? density : Nonogram.Utility.getRandomIntBetween( 200, 800 ) / 1000;
-			solutionGrid     = [];
-			rowArray         = [];
-			cellsFilled      = 0;
+
+			solutionGrid = [];
+			rowArray     = [];
+			cellsFilled  = 0;
 
 			this.log.push( 'Creating random ' +
 				this.puzzle.width + 'x' + this.puzzle.height +
