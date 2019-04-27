@@ -37,19 +37,20 @@
 
 <script>
 
-	// start: 1.25
-	// mid: 0.45
-	// final 0.37
+	// start: 3.6
+	// mid:
+	// final
 
 	(function ()
 	{
-		const creator        = new Nonogram.Creator(),
-			  log            = [],
-			  iterations     = 100,
-			  width          = 30,
-			  height         = 30
+		const creator         = new Nonogram.Creator(),
+			  log             = [],
+			  iterations      = 100,
+			  width           = 30,
+			  height          = 30
 		;
-		let totalSolvingTime = 0,
+		let totalSolvingTime  = 0,
+			totalCreationTime = 0,
 			testPuzzle
 		;
 
@@ -57,9 +58,11 @@
 
 			testPuzzle = creator.createRandom( width, height );
 			totalSolvingTime += creator.solvingTime;
+			totalCreationTime += creator.creationTime;
 		}
 
 		log.push( 'created ' + iterations + ' random ' + width + 'x' + height + ' puzzles.' );
+		log.push( 'Creation Time Elapsed: ' + totalCreationTime );
 		log.push( 'Solving Time Elapsed: ' + totalSolvingTime );
 
 		log.forEach( ( item ) =>

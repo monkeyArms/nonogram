@@ -84,13 +84,14 @@ Nonogram.Puzzle = class
 	getRowCells( row )
 	{
 		const cells = [];
+		let start   = row * this.width,
+			end     = start + this.width,
+			i
+		;
 
-		this.cells.forEach( ( cell ) =>
-		{
-			if (cell.row === row) {
-				cells.push( cell );
-			}
-		} );
+		for (i = start; i < end; i++) {
+			cells.push( this.cells[i] );
+		}
 
 		return cells.length > 0 ? cells : false;
 	}
@@ -103,13 +104,11 @@ Nonogram.Puzzle = class
 	getColumnCells( column )
 	{
 		const cells = [];
+		let i;
 
-		this.cells.forEach( ( cell ) =>
-		{
-			if (cell.column === column) {
-				cells.push( cell );
-			}
-		} );
+		for (i = column; i < this.cells.length; i += this.width) {
+			cells.push( this.cells[i] );
+		}
 
 		return cells.length > 0 ? cells : false;
 	}

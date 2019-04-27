@@ -12,6 +12,7 @@ import Nonogram from './nonogram';
  * @property {array} log
  * @property {number} creationTime
  * @property {number} solvingTime
+ * @property {number} elapsedTime
  */
 Nonogram.Creator = class
 {
@@ -22,6 +23,7 @@ Nonogram.Creator = class
 		this.log          = [];
 		this.creationTime = 0;
 		this.solvingTime  = 0;
+		this.elapsedTime  = 0;
 	}
 
 
@@ -111,8 +113,9 @@ Nonogram.Creator = class
 				this.log.push( '-----------------------------------' );
 				this.log.push( 'Puzzle generated in ' + elapsed + ' seconds.' );
 
-				this.creationTime = elapsed;
+				this.creationTime = elapsed - solver.elapsedTime;
 				this.solvingTime  = solver.elapsedTime;
+				this.elapsedTime  = elapsed;
 
 			} else {
 
