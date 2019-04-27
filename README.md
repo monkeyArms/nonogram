@@ -7,15 +7,18 @@ A small javascript library for creating, solving, and playing nonogram puzzles.
 
 ## About
 
-[Nonograms](https://en.wikipedia.org/wiki/Nonogram) (or Picross puzzles, or 20 other names) are a fun type of logic puzzle.
+[Nonograms](https://en.wikipedia.org/wiki/Nonogram) (or "Picross" puzzles, or several other names) are a fun type of visual logic puzzle.  If you enjoy Sudoku, Kakuro, or other logic puzzles you might enjoy Nonograms.
 
-The original version of this library was written in the fall of 2016 when I discovered nonograms, found them very fun, and decided to throw together a web app for personal use to generate, play and solve the puzzles.  I've since refactored it using ES6 classes, and eliminating all dependencies such as jQuery, Foundation, FontAwesome, etc.
+The original version of this library was written in the fall of 2016 as a hobby project.
+
+The library has been refactored to use ES6 classes, and eliminated all dependencies such as jQuery, Foundation, FontAwesome, etc.
 
 ## Features
 
 - Lightweight (less than 8 KB when gzipped)
 - No dependencies
-- Fast solving alogorithm that uses human techniques instead of brute force.
+- Fast solving alogorithm that uses logical techniques instead of brute force.
+- Can be used stand-alone to generate, parse or solve puzzles.
 - Simple, themable GUI (optional)
 
 ## Demo
@@ -29,10 +32,10 @@ The original version of this library was written in the fall of 2016 when I disc
 Include nonogram:
 
 ```html
-<script src="nonogram/dist/nonogram.min.js"></script>
+<script src="dist/nonogram.min.js"></script>
 ```
 
-Set up containers to hold the gui elements (`data-nonogram-{x}` attributes are required for the GUI to work, but you can place the containers anywhere you like):
+Place containers to hold the gui elements with `data-nonogram-{x}` attributes.  They can be placed anywhere in an HTML layout and none are required:
 
 ```html
 <div data-nonogram-generate-controls></div>
@@ -54,7 +57,7 @@ gui.draw( puzzle );
 ```
 ## Theming
 
-Copy the `default` directory in `dist/themes` and rename it to "my-theme" (or whatever).  Change the stylesheet or gui templates, then tell the GUI to load it in the constructor:
+Copy the `default` directory in `dist/themes` and rename it to "my-theme", etc.  Modify the theme, then tell the GUI to load it in the constructor:
 
 ```javascript
 const gui = new Nonogram.Gui( 'my-theme' );
