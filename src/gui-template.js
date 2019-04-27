@@ -10,11 +10,13 @@ import Nonogram from './nonogram';
  * @property {string} path
  * @property {string} html
  * @property {array} loadedCallbacks
- * @property {Promise} loadedPromise - resolves once template has been loaded and parsed
+ * @property {Promise} loadedPromise - resolves once template has been onLoad and parsed
+ * @property {boolean} isLoaded
  */
 Nonogram.GuiTemplate = class
 {
 	/**
+	 * class for loading an html template
 	 *
 	 * @param name
 	 * @param path
@@ -31,17 +33,18 @@ Nonogram.GuiTemplate = class
 
 
 	/**
+	 * attach a callback to fire once template has loaded
 	 *
 	 * @param {function} callback
 	 */
-	loaded( callback )
+	onLoad( callback )
 	{
 		this.onLoadedCallbacks.push( callback );
 	}
 
 
 	/**
-	 *
+	 * fired when template is loaded.  executes all onLoad callbacks
 	 */
 	fireOnLoaded()
 	{
@@ -56,41 +59,38 @@ Nonogram.GuiTemplate = class
 	 * attempts to fetch a template specified by this.path
 	 *
 	 * @returns {Promise} - complete when template has been fetched and parsed
-	 * @throws - error if template cannot be loaded
+	 * @throws - error if template cannot be onLoad
 	 */
 	load()
 	{
-		const self = this;
-
-
-		self.loadedPromise = new Promise( ( resolve ) =>
+		this.loadedPromise = new Promise( ( resolve ) =>
 		{
-			fetch( self.path ).then( ( response ) =>
+			fetch( this.path ).then( ( response ) =>
 			{
 				if (response.ok) {
 
 					response.text().then( ( text ) =>
 					{
-						self.html     = text;
-						self.isLoaded = true;
-						self.fireOnLoaded();
+						this.html     = text;
+						this.isLoaded = true;
+						this.fireOnLoaded();
 
-						resolve( self.name + ' loaded and parsed' );
+						resolve( this.name + ' onLoad and parsed' );
 					} );
 
 				} else {
 
-					throw 'loading failed for "' + self.path + '"';
+					throw 'loading failed for "' + this.path + '"';
 				}
 			} );
 		} );
 
-		return self.loadedPromise;
+		return this.loadedPromise;
 	}
 
 
 	/**
-	 *
+	 * get the html template as a DOM node
 	 * @returns {HTMLDivElement}
 	 */
 	getNode()

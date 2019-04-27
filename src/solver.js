@@ -8,10 +8,10 @@ import Nonogram from './nonogram';
  *
  * a class that solves nonogram puzzles using logical techniques a human might use
  *
- * @property {Nonogram.Puzzle} this.puzzle
- * @property {boolean} this.isReset
- * @property {array} this.lines
- * @property {array} this.solutionLog
+ * @property {Nonogram.Puzzle} puzzle
+ * @property {boolean} isReset
+ * @property {array} lines
+ * @property {array} solutionLog
  */
 Nonogram.Solver = class
 {
@@ -33,58 +33,56 @@ Nonogram.Solver = class
 	 */
 	solve()
 	{
-		const self       = this,
-			  start      = new Date().getTime()
-		;
+		const start      = new Date().getTime();
 		let lastProgress = -1,
 			pass         = 1,
 			solved, passStart, passEnd, end, passElapsedTime, totalElapsedTime
 		;
 
-		if (!self.isReset) {
-			self._reset();
+		if (!this.isReset) {
+			this._reset();
 		}
 
-		self.isReset = false;
-		self.log( 'Starting solve algorithm', 'info' );
+		this.isReset = false;
+		this.log( 'Starting solve algorithm', 'info' );
 
 
-		while (self.getProgress() > lastProgress && self.getTotalSolved() < self.puzzle.cells.length) {
+		while (this.getProgress() > lastProgress && this.getTotalSolved() < this.puzzle.cells.length) {
 
 			passStart    = new Date().getTime();
-			lastProgress = self.getProgress();
+			lastProgress = this.getProgress();
 
-			self.lines.forEach( ( line ) =>
+			this.lines.forEach( ( line ) =>
 			{
 				if (!line.solved) {
-					self.eliminateImpossibleFits( line );
-					self.findKnownPositivesAndNegatives( line );
-					self.findSectionDefiningChains( line );
-					self.findAnchoredSections( line );
-					self.findCompletedSections( line );
-					self.findCompletedLines( line );
+					this.eliminateImpossibleFits( line );
+					this.findKnownPositivesAndNegatives( line );
+					this.findSectionDefiningChains( line );
+					this.findAnchoredSections( line );
+					this.findCompletedSections( line );
+					this.findCompletedLines( line );
 				}
 			} );
 
 			passEnd         = new Date().getTime();
 			passElapsedTime = (passEnd - passStart) / 1000;
 
-			self.log( 'Pass ' + pass + ' completed in ' + passElapsedTime + ' seconds :: '
-				+ self.getTotalSolved() + '/' + self.puzzle.cells.length + ' cells solved', 'info'
+			this.log( 'Pass ' + pass + ' completed in ' + passElapsedTime + ' seconds :: '
+				+ this.getTotalSolved() + '/' + this.puzzle.cells.length + ' cells solved', 'info'
 			);
 			pass++;
 		}
 
-		solved           = self.getTotalSolved() === self.puzzle.cells.length;
+		solved           = this.getTotalSolved() === this.puzzle.cells.length;
 		end              = new Date().getTime();
 		totalElapsedTime = (end - start) / 1000;
 
-		self.log( 'Solve algorithm finished in ' + totalElapsedTime + ' seconds.', 'info' );
+		this.log( 'Solve algorithm finished in ' + totalElapsedTime + ' seconds.', 'info' );
 
 		if (solved) {
-			self.log( 'Solution Found.', 'success' );
+			this.log( 'Solution Found.', 'success' );
 		} else {
-			self.log( 'Could not find solution.', 'failure' );
+			this.log( 'Could not find solution.', 'failure' );
 		}
 
 		return solved;
@@ -99,7 +97,6 @@ Nonogram.Solver = class
 	 */
 	eliminateImpossibleFits( line )
 	{
-		const self            = this;
 		let minimumStartIndex = 0,
 			maximumStartIndex = line.length - line.minimumSectionLength,
 			i
@@ -112,7 +109,7 @@ Nonogram.Solver = class
 
 			line.cells.forEach( ( cell ) =>
 			{
-				self.setCellSolution( cell, 0 );
+				this.setCellSolution( cell, 0 );
 			} );
 		}
 
@@ -308,7 +305,6 @@ Nonogram.Solver = class
 	 */
 	findSectionDefiningChains( line )
 	{
-		const self    = this;
 		let chains    = [],
 			lastValue = 0,
 			chain, sectionsSorted, firstSortedSection
@@ -351,11 +347,11 @@ Nonogram.Solver = class
 			if (chain.length === firstSortedSection.length) {
 
 				if (line.cells[chain.start - 1]) {
-					self.setCellSolution( line.cells[chain.start - 1], 0 );
+					this.setCellSolution( line.cells[chain.start - 1], 0 );
 				}
 
 				if (line.cells[chain.start + firstSortedSection.length]) {
-					self.setCellSolution( line.cells[chain.start + firstSortedSection.length], 0 );
+					this.setCellSolution( line.cells[chain.start + firstSortedSection.length], 0 );
 				}
 
 				firstSortedSection.solved = true;
@@ -375,7 +371,6 @@ Nonogram.Solver = class
 		line.sections.forEach( ( section ) =>
 		{
 			let firstNegative, lastNegative;
-
 
 			// only one possible place...
 
@@ -441,40 +436,41 @@ Nonogram.Solver = class
 	 */
 	_reset()
 	{
-		const self                  = this,
-			  possibleRowIndexes    = [],
-			  possibleColumnIndexes = [];
+		const possibleRowIndexes    = [],
+			  possibleColumnIndexes = []
+		;
 		let i;
 
-		self.isReset     = true;
-		self.solutionLog = [];
-		self.lines       = [];
+		this.isReset     = true;
+		this.solutionLog = [];
+		this.lines       = [];
 
 		this.log( 'Resetting variables', 'info' );
 
-		self.puzzle.cells.forEach( ( cell ) =>
+		this.puzzle.cells.forEach( ( cell ) =>
 		{
 			cell.aiSolution = null;
 		} );
 
-		for (i = 0; i < self.puzzle.width; i++) {
+
+		for (i = 0; i < this.puzzle.width; i++) {
 			possibleRowIndexes.push( i );
 		}
 
-		for (i = 0; i < self.puzzle.height; i++) {
+		for (i = 0; i < this.puzzle.height; i++) {
 			possibleColumnIndexes.push( i );
 		}
 
-		self.puzzle.rowHints.forEach( ( rowHints, rowNumber ) =>
+		this.puzzle.rowHints.forEach( ( rowHints, rowNumber ) =>
 		{
-			const rowCells = self.puzzle.getRowCells( rowNumber );
+			const rowCells = this.puzzle.getRowCells( rowNumber );
 
 			if (rowCells) {
 
 				let line = new Nonogram.PuzzleLine( {
 					type:   'row',
 					index:  rowNumber,
-					length: self.puzzle.width,
+					length: this.puzzle.width,
 					cells:  rowCells
 				} );
 
@@ -493,12 +489,12 @@ Nonogram.Solver = class
 
 				line.minimumSectionLength--;
 
-				self.lines.push( line );
+				this.lines.push( line );
 			}
 		} );
 
 
-		self.puzzle.columnHints.forEach( ( columnHint, columnKey ) =>
+		this.puzzle.columnHints.forEach( ( columnHint, columnKey ) =>
 		{
 			const line = new Nonogram.PuzzleLine( {
 				type:   'column',
@@ -522,7 +518,7 @@ Nonogram.Solver = class
 
 			line.minimumSectionLength--;
 
-			self.lines.push( line );
+			this.lines.push( line );
 		} );
 	}
 
@@ -603,12 +599,11 @@ Nonogram.Solver = class
 	 */
 	getProgress()
 	{
-		const self             = this;
 		let maxPossibilities   = 0,
 			totalPossibilities = 0
 		;
 
-		self.lines.forEach( ( line ) =>
+		this.lines.forEach( ( line ) =>
 		{
 			maxPossibilities += line.sections.length * (line.type === 'row' ? this.puzzle.width : this.puzzle.height);
 

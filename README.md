@@ -62,7 +62,7 @@ Copy the `default` directory in `dist/themes` and rename it to "my-theme", etc. 
 ```javascript
 const gui = new Nonogram.Gui( 'my-theme' );
 ```
-The theme stylesheet is automatically prepended to your pages `<head>` element so that any other stylesheets can override it.  Theme templates are loaded asynchronously in the background.
+The theme stylesheet is automatically prepended to your pages `<head>` element so that any other stylesheets can override it.  Theme templates are onLoad asynchronously in the background.
 
 
 

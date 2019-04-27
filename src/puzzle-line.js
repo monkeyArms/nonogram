@@ -8,21 +8,21 @@ import Nonogram from './nonogram';
  *
  * a container representing a complete row or column of grid cells
  *
- * @property {string} this.type - either 'row' or 'column'
- * @property {number} this.index - the column or row index
- * @property {number} this.length
- * @property {number} this.minimumSectionLength
- * @property {array} this.sections
- * @property {array} this.cells
- * @property {boolean} this.solved
+ * @property {string} type - either 'row' or 'column'
+ * @property {number} index - the column or row index
+ * @property {number} length
+ * @property {number} minimumSectionLength
+ * @property {array} sections
+ * @property {array} cells
+ * @property {boolean} solved
  */
 Nonogram.PuzzleLine = class
 {
 	constructor( params )
 	{
-		this.type                 = null;
-		this.index                = null;
-		this.length               = null;
+		this.type                 = '';
+		this.index                = -1;
+		this.length               = 0;
 		this.minimumSectionLength = 0;
 		this.sections             = [];
 		this.cells                = [];

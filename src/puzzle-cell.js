@@ -8,20 +8,20 @@ import Nonogram from './nonogram';
  *
  * a container representing a single cell in the puzzle grid
  *
- * @property {number} this.index
- * @property {number} this.column
- * @property {number} this.row
- * @property {number|null} this.solution
- * @property {number|null} this.userSolution
- * @property {number|null} this.aiSolution
+ * @property {number} index
+ * @property {number} column
+ * @property {number} row
+ * @property {number|null} solution
+ * @property {number|null} userSolution
+ * @property {number|null} aiSolution
  */
 Nonogram.PuzzleCell = class
 {
 	constructor( params )
 	{
-		this.index        = null;
-		this.column       = null;
-		this.row          = null;
+		this.index        = -1;
+		this.column       = -1;
+		this.row          = -1;
 		this.solution     = null;
 		this.userSolution = null;
 		this.aiSolution   = null;

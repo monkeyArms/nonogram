@@ -132,17 +132,15 @@ Nonogram.Creator = class
 	 */
 	createFromGrid( grid )
 	{
-		const self  = this,
-			  start = new Date()
-		;
+		const start = new Date();
 		let width   = 0,
 			height  = 0,
 			puzzle, solver, elapsed
 		;
 
-		self.log = [];
+		this.log = [];
 
-		self.log.push( 'creating puzzle from grid array.' );
+		this.log.push( 'creating puzzle from grid array.' );
 
 		// make sure grid is valid and get width & height
 		if (!grid instanceof Array) {
@@ -165,13 +163,13 @@ Nonogram.Creator = class
 			height++;
 		} );
 
-		self.log.push( 'grid is valid' );
-		self.log.push( 'populating ' + width + 'x' + height + ' puzzle' );
+		this.log.push( 'grid is valid' );
+		this.log.push( 'populating ' + width + 'x' + height + ' puzzle' );
 
 		puzzle = new Nonogram.Puzzle( width, height );
 
-		self.puzzle         = Nonogram.Creator._populatePuzzleFromGrid( puzzle, grid );
-		self.puzzle.creator = self;
+		this.puzzle         = Nonogram.Creator._populatePuzzleFromGrid( puzzle, grid );
+		this.puzzle.creator = this;
 
 		// ensure that puzzle is solvable
 
@@ -195,7 +193,7 @@ Nonogram.Creator = class
 		this.log.push( 'Puzzle built and solved in ' + elapsed + ' seconds.' );
 		this.log.push( '-----------------------------------' );
 
-		return self.puzzle;
+		return this.puzzle;
 	}
 
 
@@ -212,14 +210,12 @@ Nonogram.Creator = class
 	 */
 	createFromHints( hints )
 	{
-		const self  = this,
-			  start = new Date()
-		;
+		const start = new Date();
 		let width, height, puzzle, solver, elapsed;
 
-		self.log = [];
+		this.log = [];
 
-		self.log.push( 'creating puzzle from hints' );
+		this.log.push( 'creating puzzle from hints' );
 
 		// make sure row & column properties exist
 
@@ -231,16 +227,16 @@ Nonogram.Creator = class
 
 			throw 'hints.row or hints.column must be an array.';
 		}
-		self.log.push( 'found row and column hints' );
+		this.log.push( 'found row and column hints' );
 
 		width              = hints.column.length;
 		height             = hints.row.length;
 		puzzle             = new Nonogram.Puzzle( width, height );
 		puzzle.rowHints    = hints.row;
 		puzzle.columnHints = hints.column;
-		puzzle.creator     = self;
+		puzzle.creator     = this;
 
-		self.log.push( 'populating ' + width + 'x' + height + ' puzzle' );
+		this.log.push( 'populating ' + width + 'x' + height + ' puzzle' );
 
 
 		// populate cells array
@@ -257,7 +253,7 @@ Nonogram.Creator = class
 			} );
 		} );
 
-		self.puzzle = puzzle;
+		this.puzzle = puzzle;
 
 
 		// ensure that puzzle is solvable
@@ -281,7 +277,7 @@ Nonogram.Creator = class
 
 		solver.puzzle.cells.forEach( ( solvedCell, cellIndex ) =>
 		{
-			const puzzleCell = self.puzzle.getCellByIndex( cellIndex );
+			const puzzleCell = this.puzzle.getCellByIndex( cellIndex );
 
 			puzzleCell.aiSolution = solvedCell.aiSolution;
 			puzzleCell.solution   = solvedCell.aiSolution;
@@ -292,7 +288,7 @@ Nonogram.Creator = class
 		this.log.push( 'Puzzle built and solved in ' + elapsed + ' seconds.' );
 		this.log.push( '-----------------------------------' );
 
-		return self.puzzle;
+		return this.puzzle;
 	}
 
 

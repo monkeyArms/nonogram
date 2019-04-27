@@ -356,7 +356,7 @@ table.nonogram-puzzle-grid.solved td.puzzle-cell .fill {
 }
 
 table.nonogram-puzzle-grid.solved td.puzzle-cell.solution-positive .fill,
-table.nonogram-puzzle-grid.solved td.puzzle-cell.user-positive .fill {
+table.nonogram-puzzle-grid.solved td.puzzle-cell.user-positive:not(.solution-negative) .fill {
     background-color: #73ba6c;
     border-color: #68af61;
     background-image: none;
