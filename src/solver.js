@@ -9,6 +9,7 @@ import Nonogram from './nonogram';
  * a class that solves nonogram puzzles using logical techniques a human might use
  *
  * @property {Nonogram.Puzzle} puzzle
+ * @property {number} elapsedTime
  * @property {boolean} isReset
  * @property {array} lines
  * @property {array} solutionLog
@@ -36,7 +37,7 @@ Nonogram.Solver = class
 		const start      = new Date().getTime();
 		let lastProgress = -1,
 			pass         = 1,
-			solved, passStart, passEnd, end, passElapsedTime, totalElapsedTime
+			solved, passStart, passEnd, end, passElapsedTime, totalElapsedTime, lineKey, line
 		;
 
 		if (!this.isReset) {
@@ -52,17 +53,29 @@ Nonogram.Solver = class
 			passStart    = new Date().getTime();
 			lastProgress = this.getProgress();
 
-			this.lines.forEach( ( line ) =>
-			{
+			for (lineKey = 0; lineKey < this.lines.length; lineKey++) {
+
+				line = this.lines[lineKey];
+
 				if (!line.solved) {
 					this.eliminateImpossibleFits( line );
+				}
+				if (!line.solved) {
 					this.findKnownPositivesAndNegatives( line );
+				}
+				if (!line.solved) {
 					this.findSectionDefiningChains( line );
+				}
+				if (!line.solved) {
 					this.findAnchoredSections( line );
+				}
+				if (!line.solved) {
 					this.findCompletedSections( line );
+				}
+				if (!line.solved) {
 					this.findCompletedLines( line );
 				}
-			} );
+			}
 
 			passEnd         = new Date().getTime();
 			passElapsedTime = (passEnd - passStart) / 1000;
@@ -85,6 +98,8 @@ Nonogram.Solver = class
 			this.log( 'Could not find solution.', 'failure' );
 		}
 
+		this.elapsedTime = totalElapsedTime;
+
 		return solved;
 	}
 
@@ -99,7 +114,8 @@ Nonogram.Solver = class
 	{
 		let minimumStartIndex = 0,
 			maximumStartIndex = line.length - line.minimumSectionLength,
-			i
+			i, section, possibleStartIndex, newPossibleStartIndexes, lineSectionKey, startIndexKey, testCell, end,
+			lineCellKey, lineKey
 		;
 
 
@@ -107,17 +123,16 @@ Nonogram.Solver = class
 
 		if (line.sections.length === 0) {
 
-			line.cells.forEach( ( cell ) =>
-			{
-				this.setCellSolution( cell, 0 );
-			} );
+			for (lineCellKey = 0; lineCellKey < line.cells.length; lineCellKey++) {
+				this.setCellSolution( line.cells[lineCellKey], 0 );
+			}
 		}
 
 		// tighten range if one or more known negative cells start the line
 
-		for (i = 0; i < line.length; i++) {
+		for (lineKey = 0; lineKey < line.length; lineKey++) {
 
-			if (line.cells[i].aiSolution === 0) {
+			if (line.cells[lineKey].aiSolution === 0) {
 				minimumStartIndex++;
 			} else {
 				break;
@@ -126,24 +141,27 @@ Nonogram.Solver = class
 
 		// tighten range if one or more known negative cells end the line
 
-		for (i = line.length - 1; i >= 0; i--) {
-			if (line.cells[i].aiSolution === 0) {
+		for (lineKey = line.length - 1; lineKey >= 0; lineKey--) {
+			if (line.cells[lineKey].aiSolution === 0) {
 				maximumStartIndex--;
 			} else {
 				break;
 			}
 		}
 
-		line.sections.forEach( ( section ) =>
-		{
-			let newPossibleStartIndexes = Nonogram.Utility.cloneArray( section.possibleStartIndexes );
+
+		for (lineSectionKey = 0; lineSectionKey < line.sections.length; lineSectionKey++) {
+
+			section                 = line.sections[lineSectionKey];
+			newPossibleStartIndexes = Nonogram.Utility.cloneArray( section.possibleStartIndexes );
 
 			// eliminate places where section does not fit
 
-			section.possibleStartIndexes.forEach( ( possibleStartIndex ) =>
-			{
-				const testCell = line.cells[possibleStartIndex + section.length];
-				let end;
+			for (startIndexKey = 0; startIndexKey < section.possibleStartIndexes.length; startIndexKey++) {
+
+				possibleStartIndex = section.possibleStartIndexes[startIndexKey];
+
+				testCell = line.cells[possibleStartIndex + section.length];
 
 				// the total length of all sections including minimum gap(s) of one cell does not allow this section to fit:
 
@@ -167,13 +185,14 @@ Nonogram.Solver = class
 						newPossibleStartIndexes = Nonogram.Utility.removeFromArray( newPossibleStartIndexes, possibleStartIndex );
 					}
 				}
-			} );
+			}
+
 
 			minimumStartIndex += section.length + 1;
 			maximumStartIndex += section.length + 1;
 
 			section.possibleStartIndexes = newPossibleStartIndexes;
-		} );
+		}
 	}
 
 
@@ -184,49 +203,53 @@ Nonogram.Solver = class
 	findKnownPositivesAndNegatives( line )
 	{
 		const totalCellCounts = Nonogram.Utility.getZeroFilledArray( line.length );
+		let sectionKey, section, cellCounts, startIndexKey, possibleStartIndex, start, end, i, cellCountKey, cellCount,
+			cell;
 
+		for (sectionKey = 0; sectionKey < line.sections.length; sectionKey++) {
 
-		line.sections.forEach( ( section ) =>
-		{
-			const cellCounts = Nonogram.Utility.getZeroFilledArray( line.length );
+			section    = line.sections[sectionKey];
+			cellCounts = Nonogram.Utility.getZeroFilledArray( line.length );
 
 			// keep two counts: 1) all common cells for this section, and 2) cells where no section can be
 
-			section.possibleStartIndexes.forEach( ( possibleStartIndex ) =>
-			{
-				const start = possibleStartIndex,
-					  end   = start + section.length - 1
-				;
-				let i;
+			for (startIndexKey = 0; startIndexKey < section.possibleStartIndexes.length; startIndexKey++) {
+
+				possibleStartIndex = section.possibleStartIndexes[startIndexKey];
+				start              = possibleStartIndex;
+				end                = start + section.length - 1;
 
 				for (i = start; i <= end; i++) {
 					cellCounts[i]++;
 					totalCellCounts[i]++;
 				}
-			} );
+			}
+
 
 			// common to all possibilities, solve as positive
 
-			cellCounts.forEach( ( cellCount, cellCountKey ) =>
-			{
-				const cell = line.cells[cellCountKey];
+			for (cellCountKey = 0; cellCountKey < cellCounts.length; cellCountKey++) {
+
+				cellCount = cellCounts[cellCountKey];
+				cell      = line.cells[cellCountKey];
 
 				if (cell && cell.aiSolution === null && cellCount === section.possibleStartIndexes.length) {
 					this.setCellSolution( cell, 1 );
 				}
-			} );
-		} );
+			}
+		}
 
 		// no possible cells, remove as a possibility
 
-		totalCellCounts.forEach( ( cellCount, cellCountKey ) =>
-		{
-			const cell = line.cells[cellCountKey];
+		for (cellCountKey = 0; cellCountKey < totalCellCounts.length; cellCountKey++) {
+
+			cellCount = totalCellCounts[cellCountKey];
+			cell      = line.cells[cellCountKey];
 
 			if (cell && cell.aiSolution === null && cellCount === 0) {
 				this.setCellSolution( cell, 0 );
 			}
-		} );
+		}
 	}
 
 
@@ -307,7 +330,7 @@ Nonogram.Solver = class
 	{
 		let chains    = [],
 			lastValue = 0,
-			chain, sectionsSorted, firstSortedSection
+			cellKey, cell, chain, chainKey, sectionsSorted, firstSortedSection
 		;
 
 
@@ -322,9 +345,12 @@ Nonogram.Solver = class
 
 		// loop through all cells, creating array of connectors
 
-		line.cells.forEach( ( cell, cellKey ) =>
-		{
+		for (cellKey = 0; cellKey < line.cells.length; cellKey++) {
+
+			cell = line.cells[cellKey];
+
 			if (cell.aiSolution === 1) {
+
 				if (lastValue !== 1) {
 					chain = {
 						start:  cellKey,
@@ -337,13 +363,15 @@ Nonogram.Solver = class
 			}
 
 			lastValue = cell.aiSolution;
-		} );
+		}
 
 
 		// if a connector is found with the first section's length, place negatives around it and mark the section as complete & continue
 
-		chains.forEach( ( chain ) =>
-		{
+		for (chainKey = 0; chainKey < chains.length; chainKey++) {
+
+			chain = chains[chainKey];
+
 			if (chain.length === firstSortedSection.length) {
 
 				if (line.cells[chain.start - 1]) {
@@ -356,7 +384,7 @@ Nonogram.Solver = class
 
 				firstSortedSection.solved = true;
 			}
-		} );
+		}
 	}
 
 
@@ -366,11 +394,14 @@ Nonogram.Solver = class
 	 */
 	findCompletedSections( line )
 	{
+		let sectionKey, section, firstNegative, lastNegative;
+
 		// complete lines where all sections have been found
 
-		line.sections.forEach( ( section ) =>
-		{
-			let firstNegative, lastNegative;
+		for (sectionKey = 0; sectionKey < line.sections.length; sectionKey++) {
+
+			section = line.sections[sectionKey];
+
 
 			// only one possible place...
 
@@ -390,7 +421,7 @@ Nonogram.Solver = class
 
 				section.solved = true;
 			}
-		} );
+		}
 	}
 
 
@@ -401,29 +432,34 @@ Nonogram.Solver = class
 	findCompletedLines( line )
 	{
 		let totalSectionLength  = 0,
-			totalPositiveSolved = 0
+			totalPositiveSolved = 0,
+			sectionKey, section, cellKey, cell
 		;
 
 		// complete lines where all sections have been found
 
-		line.sections.forEach( ( section ) =>
-		{
-			totalSectionLength += section.length;
-		} );
+		for (sectionKey = 0; sectionKey < line.sections.length; sectionKey++) {
 
-		line.cells.forEach( ( cell ) =>
-		{
+			section = line.sections[sectionKey];
+			totalSectionLength += section.length;
+		}
+
+		for (cellKey = 0; cellKey < line.cells.length; cellKey++) {
+
+			cell = line.cells[cellKey];
 			totalPositiveSolved += cell.aiSolution === 1;
-		} );
+		}
 
 		if (totalSectionLength === totalPositiveSolved) {
 
-			line.cells.forEach( ( cell ) =>
-			{
+			for (cellKey = 0; cellKey < line.cells.length; cellKey++) {
+
+				cell = line.cells[cellKey];
+
 				if (cell.aiSolution === null) {
 					this.setCellSolution( cell, 0 );
 				}
-			} );
+			}
 		}
 	}
 
@@ -439,43 +475,52 @@ Nonogram.Solver = class
 		const possibleRowIndexes    = [],
 			  possibleColumnIndexes = []
 		;
-		let i;
+		let i, cellKey, rowNumber, rowHints, rowCells, line, index, len, columnKey, columnHint;
 
 		this.isReset     = true;
+		this.elapsedTime = 0;
 		this.solutionLog = [];
 		this.lines       = [];
 
 		this.log( 'Resetting variables', 'info' );
 
-		this.puzzle.cells.forEach( ( cell ) =>
-		{
-			cell.aiSolution = null;
-		} );
+		// reset cell.aiSolution
 
+		for (cellKey = 0; cellKey < this.puzzle.cells.length; cellKey++) {
+			this.puzzle.cells[cellKey].aiSolution = null;
+		}
+
+		// reset possibleRowIndexes
 
 		for (i = 0; i < this.puzzle.width; i++) {
 			possibleRowIndexes.push( i );
 		}
 
+		// reset possibleColumnIndexes
+
 		for (i = 0; i < this.puzzle.height; i++) {
 			possibleColumnIndexes.push( i );
 		}
 
-		this.puzzle.rowHints.forEach( ( rowHints, rowNumber ) =>
-		{
-			const rowCells = this.puzzle.getRowCells( rowNumber );
+		// reset rowHints
+
+		for (rowNumber = 0; rowNumber < this.puzzle.rowHints.length; rowNumber++) {
+
+			rowHints = this.puzzle.rowHints[rowNumber];
+			rowCells = this.puzzle.getRowCells( rowNumber );
 
 			if (rowCells) {
 
-				let line = new Nonogram.PuzzleLine( {
+				line = new Nonogram.PuzzleLine( {
 					type:   'row',
 					index:  rowNumber,
 					length: this.puzzle.width,
 					cells:  rowCells
 				} );
 
-				rowHints.forEach( ( len, index ) =>
-				{
+				for (index = 0; index < rowHints.length; index++) {
+
+					len = rowHints[index];
 					line.sections.push( {
 						index:                index,
 						length:               len,
@@ -485,26 +530,28 @@ Nonogram.Solver = class
 					} );
 
 					line.minimumSectionLength += len + 1;
-				} );
+				}
 
 				line.minimumSectionLength--;
 
 				this.lines.push( line );
 			}
-		} );
+		}
 
+		// reset columnHints
 
-		this.puzzle.columnHints.forEach( ( columnHint, columnKey ) =>
-		{
-			const line = new Nonogram.PuzzleLine( {
+		for (columnKey = 0; columnKey < this.puzzle.columnHints.length; columnKey++) {
+
+			columnHint = this.puzzle.columnHints[columnKey];
+			line       = new Nonogram.PuzzleLine( {
 				type:   'column',
 				index:  columnKey,
 				length: this.puzzle.height,
 				cells:  this.puzzle.getColumnCells( columnKey ),
 			} );
 
-			columnHint.forEach( ( len, index ) =>
-			{
+			for (index = 0; index < columnHint.length; index++) {
+				len = columnHint[index];
 				line.sections.push( {
 					index:                index,
 					length:               len,
@@ -514,12 +561,12 @@ Nonogram.Solver = class
 				} );
 
 				line.minimumSectionLength += len + 1;
-			} );
+			}
 
 			line.minimumSectionLength--;
 
 			this.lines.push( line );
-		} );
+		}
 	}
 
 
@@ -530,34 +577,38 @@ Nonogram.Solver = class
 	 */
 	setCellSolution( puzzleCell, value )
 	{
+		let lineKey, line, isRow, isCol, cellsSolved, cellKey, cell;
+
 		if (puzzleCell.aiSolution !== null) {
 			return;
 		}
 
-		this.lines.forEach( ( line ) =>
-		{
-			const isRow     = line.type === 'row' && line.index === puzzleCell.row,
-				  isCol     = line.type === 'column' && line.index === puzzleCell.column
-			;
-			let cellsSolved = 0;
+		for (lineKey = 0; lineKey < this.lines.length; lineKey++) {
+
+			line        = this.lines[lineKey];
+			isRow       = line.type === 'row' && line.index === puzzleCell.row;
+			isCol       = line.type === 'column' && line.index === puzzleCell.column;
+			cellsSolved = 0;
 
 			if (isRow || isCol) {
 
-				line.cells.forEach( ( cell ) =>
-				{
+				for (cellKey = 0; cellKey < line.cells.length; cellKey++) {
+
+					cell = line.cells[cellKey];
+
 					if (cell.index === puzzleCell.index) {
 						cell.aiSolution = value;
 						cellsSolved++;
 					} else if (cell.aiSolution !== null) {
 						cellsSolved++;
 					}
-				} );
+				}
 
 				if (cellsSolved === line.length) {
 					line.solved = true;
 				}
 			}
-		} );
+		}
 	}
 
 
@@ -581,12 +632,13 @@ Nonogram.Solver = class
 	 */
 	getTotalSolved()
 	{
-		let total = 0;
+		let total = 0,
+			cellKey
+		;
 
-		this.puzzle.cells.forEach( ( cell ) =>
-		{
-			total += cell.aiSolution !== null;
-		} );
+		for (cellKey = 0; cellKey < this.puzzle.cells.length; cellKey++) {
+			total += this.puzzle.cells[cellKey].aiSolution !== null;
+		}
 
 		return total;
 	}
@@ -600,18 +652,19 @@ Nonogram.Solver = class
 	getProgress()
 	{
 		let maxPossibilities   = 0,
-			totalPossibilities = 0
+			totalPossibilities = 0,
+			lineKey, line, sectionKey
 		;
 
-		this.lines.forEach( ( line ) =>
-		{
+		for (lineKey = 0; lineKey < this.lines.length; lineKey++) {
+
+			line = this.lines[lineKey];
 			maxPossibilities += line.sections.length * (line.type === 'row' ? this.puzzle.width : this.puzzle.height);
 
-			line.sections.forEach( ( section ) =>
-			{
-				totalPossibilities += section.possibleStartIndexes.length;
-			} );
-		} );
+			for (sectionKey = 0; sectionKey < line.sections.length; sectionKey++) {
+				totalPossibilities += line.sections[sectionKey].possibleStartIndexes.length;
+			}
+		}
 
 		return maxPossibilities - totalPossibilities;
 	}

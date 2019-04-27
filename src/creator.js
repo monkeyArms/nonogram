@@ -8,18 +8,20 @@ import Nonogram from './nonogram';
  *
  * creates nonogram puzzles
  *
- * @property {Nonogram.Puzzle} this.puzzle
- * @property {array} this.log
+ * @property {Nonogram.Puzzle} puzzle
+ * @property {array} log
+ * @property {number} creationTime
+ * @property {number} solvingTime
  */
 Nonogram.Creator = class
 {
 
-	/**
-	 *
-	 */
-	constructor()
+
+	_reset()
 	{
-		this.log = [];
+		this.log          = [];
+		this.creationTime = 0;
+		this.solvingTime  = 0;
 	}
 
 
@@ -45,7 +47,7 @@ Nonogram.Creator = class
 		;
 
 		this.puzzle = new Nonogram.Puzzle( width, height );
-		this.log    = [];
+		this._reset();
 
 
 		while (puzzleValid === false) {
@@ -105,9 +107,12 @@ Nonogram.Creator = class
 				puzzleValid = true;
 				elapsed     = (new Date().getTime() - start) / 1000;
 
-				this.log.push( 'Puzzle is solvable.' );
+				this.log.push( 'Puzzle is solvable - solved in ' + solver.elapsedTime + ' seconds' );
 				this.log.push( '-----------------------------------' );
 				this.log.push( 'Puzzle generated in ' + elapsed + ' seconds.' );
+
+				this.creationTime = elapsed;
+				this.solvingTime  = solver.elapsedTime;
 
 			} else {
 
@@ -138,7 +143,7 @@ Nonogram.Creator = class
 			puzzle, solver, elapsed
 		;
 
-		this.log = [];
+		this._reset();
 
 		this.log.push( 'creating puzzle from grid array.' );
 
@@ -213,7 +218,7 @@ Nonogram.Creator = class
 		const start = new Date();
 		let width, height, puzzle, solver, elapsed;
 
-		this.log = [];
+		this._reset();
 
 		this.log.push( 'creating puzzle from hints' );
 
