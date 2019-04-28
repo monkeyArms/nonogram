@@ -1,6 +1,10 @@
 # nonogram Release Notes
 
 
+## 0.2.1
+
+- Rewrote as ES6 Modules.
+
 ## 0.2.0
 
 - Started git repo
@@ -10,11 +14,11 @@
     - Refactored the original `prototypes` into `ES6 classes` class declarations
     - Changed function arguments to use `arrow functions`
     - Modified various `for` and `for in` looping structures to use `forEach`, `for of`, `map`, `some`, `every`, and `fill`.
-    - Converted all loops with `Nonogram.Solver` to `for` loops to boost performance.
+    - Converted all loops with `Solver` to `for` loops to boost performance.
     - Fixed all `==` potential type coercion issues with `===`
     - Documented js library using `JSDoc`
- - Added the `Nonogram.Utility` class and moved some often used methods to here, declared statically.
- - Transitioned some previously anonymous objects into their own classes: `Nonogram.PuzzleCell` and`Nonogram.PuzzleLine`
+ - Added the `Utility` class and moved some often used methods to here, declared statically.
+ - Transitioned some previously anonymous objects into their own classes: `PuzzleCell` and`PuzzleLine`
  - Restructured into project into `src`, `dist`, and `example` directories
  - Added `.editorconfig`
  - Added `package.json`

@@ -1,4 +1,4 @@
-import Nonogram from './nonogram';
+export {PuzzleLibrary};
 
 
 /**
@@ -6,7 +6,7 @@ import Nonogram from './nonogram';
  * @type {{'Large Example 1': {hints: {column: *[], row: *[]}, width: number, height: number}, 'Small Example 2': {hints: {column: *[], row: *[]}, width: number, height: number}, 'Medium Example 1': {hints: {column: *[], row: *[]}, width: number, height: number}, 'Small Example 1': {solutionGrid: *[], width: number, height: number}, 'Medium Example 2': {hints: {column: *[], row: *[]}, width: number, height: number}, 'Small Example 3': {hints: {column: *[], row: *[]}, width: number, height: number}}}
  */
 
-Nonogram.PuzzleLibrary = {
+const PuzzleLibrary = {
 
 	"Small Example 1": {
 		width:        8,
@@ -85,3 +85,4 @@ Nonogram.PuzzleLibrary = {
 		}
 	}
 };
+

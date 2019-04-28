@@ -1,10 +1,12 @@
-import Nonogram from './nonogram';
+import {Utility} from '../src/utility.js';
 
+
+export {Puzzle};
 
 /**
  * @class
- * @type {Nonogram.Puzzle}
- * @this Nonogram.Puzzle
+ * @type {Puzzle}
+ * @this Puzzle
  *
  * the main puzzle class containing the grid of cells, row/column hints, etc.
  *
@@ -14,11 +16,11 @@ import Nonogram from './nonogram';
  * @property {array} cells
  * @property {array} rowHints
  * @property {array} columnHints
- * @property {Nonogram.Creator|null} creator
+ * @property {Creator|null} creator
  * @property {array} grid - a multi-dimensional array representing rows and columns.
  *                   for example a 2x2 grid could be represented by [[0,1],[0,0]]
  */
-Nonogram.Puzzle = class
+const Puzzle = class
 {
 	/**
 	 * @param {number} width - an integer >= 1 specifying the number of rows
@@ -49,7 +51,7 @@ Nonogram.Puzzle = class
 	 */
 	reset()
 	{
-		const zeroFill = Nonogram.Utility.getZeroFilledArray;
+		const zeroFill = Utility.getZeroFilledArray;
 
 		this.creator     = null;
 		this.cells       = [];
@@ -75,7 +77,7 @@ Nonogram.Puzzle = class
 			return cell.solution === userValue;
 		} );
 	}
-	
+
 
 	/**
 	 * @param {number} row
@@ -126,6 +128,4 @@ Nonogram.Puzzle = class
 	}
 
 };
-
-
 

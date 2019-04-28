@@ -1,21 +1,21 @@
-import Nonogram from './nonogram';
+export {PuzzleCell};
 
 
 /**
  * @class
- * @type {Nonogram.PuzzleCell}
- * @this Nonogram.PuzzleCell
+ * @type {PuzzleCell}
+ * @this PuzzleCell
  *
  * a container representing a single cell in the puzzle grid
  *
  * @property {number} index
  * @property {number} column
  * @property {number} row
- * @property {number|null} solution
- * @property {number|null} userSolution
- * @property {number|null} aiSolution
+ * @property {*} solution - null, 0, or 1
+ * @property {*} userSolution - null, 0, or 1
+ * @property {*} aiSolution - null, 0, or 1
  */
-Nonogram.PuzzleCell = class
+const PuzzleCell = class
 {
 	constructor( params )
 	{
@@ -29,3 +29,4 @@ Nonogram.PuzzleCell = class
 		Object.assign( this, params );
 	}
 };
+

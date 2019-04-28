@@ -1,20 +1,25 @@
-import Nonogram from './nonogram';
+import {Puzzle} from '../src/puzzle.js';
+import {PuzzleCell} from '../src/puzzle-cell.js';
+import {Solver} from '../src/solver.js';
+import {Utility} from '../src/utility.js';
 
+
+export {Creator};
 
 /**
  * @class
- * @type {Nonogram.Creator}
- * @this Nonogram.Creator
+ * @type {Creator}
+ * @this Creator
  *
  * creates nonogram puzzles
  *
- * @property {Nonogram.Puzzle} puzzle
- * @property {array} _log
+ * @property {Puzzle} puzzle
+ * @property {array} log
  * @property {number} creationTime
  * @property {number} solvingTime
  * @property {number} elapsedTime
  */
-Nonogram.Creator = class
+const Creator = class
 {
 
 
@@ -38,7 +43,7 @@ Nonogram.Creator = class
 	 *                                    If not supplied a random value between 0.2 and 0.8 will be generated.
 	 *                                    Note that this does not make a puzzle grid filled in by the percentage,
 	 *                                    rather it's a 'suggestion' that is run through randomization on a cell-by-cell basis.
-	 * @returns {Nonogram.Puzzle|Puzzle|class}
+	 * @returns {Puzzle|Puzzle|class}
 	 */
 	createRandom( width, height, density )
 	{
@@ -49,13 +54,13 @@ Nonogram.Creator = class
 		;
 
 
-		this.puzzle = new Nonogram.Puzzle( width, height );
+		this.puzzle = new Puzzle( width, height );
 		this._reset();
 
 
 		while (puzzleValid === false) {
 
-			chanceOfCellFill = densityValid ? density : Nonogram.Utility.getRandomIntBetween( 200, 800 ) / 1000;
+			chanceOfCellFill = densityValid ? density : Utility.getRandomIntBetween( 200, 800 ) / 1000;
 			solutionGrid     = [];
 			rowArray         = [];
 			cellsFilled      = 0;
@@ -99,11 +104,11 @@ Nonogram.Creator = class
 			solutionGrid.push( rowArray );
 
 			// populate the grid
-			this.puzzle = Nonogram.Creator._populatePuzzleFromGrid( this.puzzle, solutionGrid );
+			this.puzzle = Creator._populatePuzzleFromGrid( this.puzzle, solutionGrid );
 
 
 			// ensure that puzzle is solvable
-			solver = new Nonogram.Solver( this.puzzle );
+			solver = new Solver( this.puzzle );
 
 			if (solver.solve()) {
 
@@ -152,14 +157,14 @@ Nonogram.Creator = class
 		this._log( 'creating puzzle from grid array.' );
 
 		// make sure grid is valid and get width & height
-		if (!grid instanceof Array) {
+		if (!(grid instanceof Array)) {
 			throw 'grid is not an array';
 		}
 
 
 		grid.forEach( ( row, rowKey ) =>
 		{
-			if (!row instanceof Array) {
+			if (!(row instanceof Array)) {
 				throw 'grid is not a multi-dimensional array';
 			}
 
@@ -175,14 +180,14 @@ Nonogram.Creator = class
 		this._log( 'grid is valid' );
 		this._log( 'populating ' + width + 'x' + height + ' puzzle' );
 
-		puzzle = new Nonogram.Puzzle( width, height );
+		puzzle = new Puzzle( width, height );
 
-		this.puzzle         = Nonogram.Creator._populatePuzzleFromGrid( puzzle, grid );
+		this.puzzle         = Creator._populatePuzzleFromGrid( puzzle, grid );
 		this.puzzle.creator = this;
 
 		// ensure that puzzle is solvable
 
-		solver = new Nonogram.Solver( this.puzzle );
+		solver = new Solver( this.puzzle );
 
 
 		if (solver.solve()) {
@@ -232,7 +237,7 @@ Nonogram.Creator = class
 
 			throw 'parameter passed to createFromHints() must be an object containing "row" and "column" properties';
 
-		} else if (!hints.row instanceof Array || !hints.column instanceof Array) {
+		} else if (!(hints.row instanceof Array) || !(hints.column instanceof Array)) {
 
 			throw 'hints.row or hints.column must be an array.';
 		}
@@ -240,7 +245,7 @@ Nonogram.Creator = class
 
 		width              = hints.column.length;
 		height             = hints.row.length;
-		puzzle             = new Nonogram.Puzzle( width, height );
+		puzzle             = new Puzzle( width, height );
 		puzzle.rowHints    = hints.row;
 		puzzle.columnHints = hints.column;
 		puzzle.creator     = this;
@@ -254,7 +259,7 @@ Nonogram.Creator = class
 		{
 			row.forEach( ( column, columnKey ) =>
 			{
-				puzzle.cells.push( new Nonogram.PuzzleCell( {
+				puzzle.cells.push( new PuzzleCell( {
 					index:  (rowKey * puzzle.width) + columnKey,
 					column: columnKey,
 					row:    rowKey
@@ -267,7 +272,7 @@ Nonogram.Creator = class
 
 		// ensure that puzzle is solvable
 
-		solver = new Nonogram.Solver( this.puzzle );
+		solver = new Solver( this.puzzle );
 
 
 		if (solver.solve()) {
@@ -305,9 +310,9 @@ Nonogram.Creator = class
 
 	/**
 	 *
-	 * @param {Nonogram.Puzzle} puzzle
+	 * @param {Puzzle} puzzle
 	 * @param {array} grid - a multidimensional array
-	 * @returns {Nonogram.Puzzle} puzzle
+	 * @returns {Puzzle} puzzle
 	 * @private
 	 */
 	static _populatePuzzleFromGrid( puzzle, grid )
@@ -334,7 +339,7 @@ Nonogram.Creator = class
 
 				// populate cells
 
-				puzzle.cells.push( new Nonogram.PuzzleCell( {
+				puzzle.cells.push( new PuzzleCell( {
 					index:    (rowKey * puzzle.width) + columnKey,
 					column:   columnKey,
 					row:      rowKey,
@@ -432,7 +437,6 @@ Nonogram.Creator = class
 		this.creationTime = 0;
 		this.solvingTime  = 0;
 	}
-
 
 };
 

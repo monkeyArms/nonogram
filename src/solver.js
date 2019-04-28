@@ -1,24 +1,27 @@
-import Nonogram from './nonogram';
+import {PuzzleLine} from '../src/puzzle-line.js';
+import {Utility} from '../src/utility.js';
 
+
+export {Solver};
 
 /**
  * @class
- * @type {Nonogram.Solver}
- * @this Nonogram.Solver
+ * @type {Solver}
+ * @this Solver
  *
  * a class that solves nonogram puzzles using logical techniques a human might use
  *
- * @property {Nonogram.Puzzle} puzzle
+ * @property {Puzzle} puzzle
  * @property {number} elapsedTime
  * @property {boolean} isReset
  * @property {array} lines
  * @property {array} solutionLog
  */
-Nonogram.Solver = class
+const Solver = class
 {
 
 	/**
-	 * @param {Nonogram.Puzzle} puzzle
+	 * @param {Puzzle} puzzle
 	 */
 	constructor( puzzle )
 	{
@@ -108,7 +111,7 @@ Nonogram.Solver = class
 
 	/**
 	 *
-	 * @param {Nonogram.PuzzleLine} line
+	 * @param {PuzzleLine} line
 	 */
 	eliminateImpossibleFits( line )
 	{
@@ -153,7 +156,7 @@ Nonogram.Solver = class
 		for (lineSectionKey = 0; lineSectionKey < line.sections.length; lineSectionKey++) {
 
 			section                 = line.sections[lineSectionKey];
-			newPossibleStartIndexes = Nonogram.Utility.cloneArray( section.possibleStartIndexes );
+			newPossibleStartIndexes = Utility.cloneArray( section.possibleStartIndexes );
 
 			// eliminate places where section does not fit
 
@@ -166,13 +169,13 @@ Nonogram.Solver = class
 				// the total length of all sections including minimum gap(s) of one cell does not allow this section to fit:
 
 				if (possibleStartIndex < minimumStartIndex || possibleStartIndex > maximumStartIndex) {
-					newPossibleStartIndexes = Nonogram.Utility.removeFromArray( newPossibleStartIndexes, possibleStartIndex );
+					newPossibleStartIndexes = Utility.removeFromArray( newPossibleStartIndexes, possibleStartIndex );
 				}
 
 				// there is a known positive cell immediately following the possible section placement, so section cannot start here
 
 				if (testCell && testCell.aiSolution === 1) {
-					newPossibleStartIndexes = Nonogram.Utility.removeFromArray( newPossibleStartIndexes, possibleStartIndex );
+					newPossibleStartIndexes = Utility.removeFromArray( newPossibleStartIndexes, possibleStartIndex );
 				}
 
 				// there is a known impossible cell in this range, so section cannot fit here:
@@ -182,7 +185,7 @@ Nonogram.Solver = class
 
 				for (i = possibleStartIndex; i <= end; i++) {
 					if (i > line.length - 1 || line.cells[i].aiSolution === 0) {
-						newPossibleStartIndexes = Nonogram.Utility.removeFromArray( newPossibleStartIndexes, possibleStartIndex );
+						newPossibleStartIndexes = Utility.removeFromArray( newPossibleStartIndexes, possibleStartIndex );
 					}
 				}
 			}
@@ -198,18 +201,18 @@ Nonogram.Solver = class
 
 	/**
 	 *
-	 * @param {Nonogram.PuzzleLine} line
+	 * @param {PuzzleLine} line
 	 */
 	findKnownPositivesAndNegatives( line )
 	{
-		const totalCellCounts = Nonogram.Utility.getZeroFilledArray( line.length );
+		const totalCellCounts = Utility.getZeroFilledArray( line.length );
 		let sectionKey, section, cellCounts, startIndexKey, possibleStartIndex, start, end, i, cellCountKey, cellCount,
 			cell;
 
 		for (sectionKey = 0; sectionKey < line.sections.length; sectionKey++) {
 
 			section    = line.sections[sectionKey];
-			cellCounts = Nonogram.Utility.getZeroFilledArray( line.length );
+			cellCounts = Utility.getZeroFilledArray( line.length );
 
 			// keep two counts: 1) all common cells for this section, and 2) cells where no section can be
 
@@ -255,7 +258,7 @@ Nonogram.Solver = class
 
 	/**
 	 *
-	 * @param {Nonogram.PuzzleLine} line
+	 * @param {PuzzleLine} line
 	 */
 	findAnchoredSections( line )
 	{
@@ -324,7 +327,7 @@ Nonogram.Solver = class
 
 	/**
 	 *
-	 * @param {Nonogram.PuzzleLine} line
+	 * @param {PuzzleLine} line
 	 */
 	findSectionDefiningChains( line )
 	{
@@ -336,7 +339,7 @@ Nonogram.Solver = class
 
 		// sort sections by highest length to lowest
 
-		sectionsSorted     = Nonogram.Utility.cloneArray( line.sections ).sort( function ( a, b )
+		sectionsSorted     = Utility.cloneArray( line.sections ).sort( function ( a, b )
 		{
 			return a.length > b.length ? -1 : 1;
 		} );
@@ -357,7 +360,7 @@ Nonogram.Solver = class
 						length: 1
 					};
 					chains.push( chain );
-				} else {
+				} else if (chain) {
 					chain.length++;
 				}
 			}
@@ -390,7 +393,7 @@ Nonogram.Solver = class
 
 	/**
 	 *
-	 * @param {Nonogram.PuzzleLine} line
+	 * @param {PuzzleLine} line
 	 */
 	findCompletedSections( line )
 	{
@@ -427,7 +430,7 @@ Nonogram.Solver = class
 
 	/**
 	 *
-	 * @param {Nonogram.PuzzleLine} line
+	 * @param {PuzzleLine} line
 	 */
 	findCompletedLines( line )
 	{
@@ -512,7 +515,7 @@ Nonogram.Solver = class
 
 			if (rowCells) {
 
-				line = new Nonogram.PuzzleLine( {
+				line = new PuzzleLine( {
 					type:   'row',
 					index:  rowNumber,
 					length: this.puzzle.width,
@@ -544,7 +547,7 @@ Nonogram.Solver = class
 		for (columnKey = 0; columnKey < this.puzzle.columnHints.length; columnKey++) {
 
 			columnHint = this.puzzle.columnHints[columnKey];
-			line       = new Nonogram.PuzzleLine( {
+			line       = new PuzzleLine( {
 				type:   'column',
 				index:  columnKey,
 				length: this.puzzle.height,
@@ -573,7 +576,7 @@ Nonogram.Solver = class
 
 	/**
 	 *
-	 * @param {Nonogram.PuzzleCell} puzzleCell
+	 * @param {PuzzleCell} puzzleCell
 	 * @param {number} value
 	 * @private
 	 */

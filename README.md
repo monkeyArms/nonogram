@@ -15,7 +15,7 @@ The library has been refactored to use ES6 classes, and eliminated all dependenc
 
 ## Features
 
-- Lightweight (less than 8 KB when gzipped)
+- Lightweight (~8KB when gzipped)
 - No dependencies
 - Fast solving alogorithm that uses logical techniques instead of brute force.
 - Can be used stand-alone to generate, parse or solve puzzles.
@@ -47,9 +47,9 @@ Create a random 5x5 puzzle and tell the GUI to render everything:
 ```html
 <script>
 
-const creator = new Nonogram.Creator();
+const creator = new Creator();
 const puzzle  = creator.createRandom( 5, 5 );
-const gui = new Nonogram.Gui();
+const gui = new Gui();
 
 gui.draw( puzzle );
 
@@ -60,7 +60,7 @@ gui.draw( puzzle );
 Copy the `default` directory in `dist/themes` and rename it to "my-theme", etc.  Modify the theme, then tell the GUI to load it in the constructor:
 
 ```javascript
-const gui = new Nonogram.Gui( 'my-theme' );
+const gui = new Gui( 'my-theme' );
 ```
 The theme stylesheet is automatically prepended to your pages `<head>` element so that any other stylesheets can override it.  Theme templates are onLoad asynchronously in the background.
 

@@ -1,16 +1,20 @@
-import Nonogram from './nonogram';
+import {GuiTemplate} from '../src/gui-template.js';
+import {PuzzleLibrary} from '../src/puzzle-library.js';
+import {Creator} from '../src/creator.js';
 
+
+export {Gui};
 
 /**
  * @class
- * @type {Nonogram.Gui}
- * @this Nonogram.Gui
+ * @type {Gui}
+ * @this Gui
  *
  * provides a user interface for interacting with nonogram puzzles
  *
- * @property {Nonogram.Puzzle} puzzle
+ * @property {Puzzle} puzzle
  * @property {HTMLElement} gridContainer - container element for the puzzle grid ui
- * @property {array} templates - array of Nonogram.GuiTemplate objects
+ * @property {array} templates - array of GuiTemplate objects
  * @property {array} templatesLoaded - array of Promises from each onLoad template
  * @property {string|null} theme - the theme to use, located in the themes/ directory
  * @property {string} themePath - the path to the specified theme located in themes/{theme}
@@ -18,7 +22,7 @@ import Nonogram from './nonogram';
  * @property {string} themeTemplatesPath - the path to the theme template directory located in themes/{theme}/templates
  * @property {int} playerClickMode - whether to fill or cross a cell on click
  */
-Nonogram.Gui = class
+const Gui = class
 {
 
 	/**
@@ -44,6 +48,8 @@ Nonogram.Gui = class
 		this.theme     = theme || 'default';
 		this.themePath = this._resolveThemePath() + '/' + this.theme;
 
+		console.log( this.themePath );
+
 		// load theme stylesheet
 		this.themeStylesheetPath = this.themePath + '/styles.css';
 		link.rel                 = 'stylesheet';
@@ -55,11 +61,11 @@ Nonogram.Gui = class
 		this.templatesLoaded    = [];
 		this.themeTemplatesPath = this.themePath + '/templates';
 		this.templates          = [
-			new Nonogram.GuiTemplate( 'gameControls', this.themeTemplatesPath + '/controls-game.html' ),
-			new Nonogram.GuiTemplate( 'generateControls', this.themeTemplatesPath + '/controls-generate.html' ),
-			new Nonogram.GuiTemplate( 'console', this.themeTemplatesPath + '/console.html' ),
-			new Nonogram.GuiTemplate( 'previewGrid', this.themeTemplatesPath + '/preview-grid.html' ),
-			new Nonogram.GuiTemplate( 'puzzleGrid', this.themeTemplatesPath + '/puzzle-grid.html' ),
+			new GuiTemplate( 'gameControls', this.themeTemplatesPath + '/controls-game.html' ),
+			new GuiTemplate( 'generateControls', this.themeTemplatesPath + '/controls-generate.html' ),
+			new GuiTemplate( 'console', this.themeTemplatesPath + '/console.html' ),
+			new GuiTemplate( 'previewGrid', this.themeTemplatesPath + '/preview-grid.html' ),
+			new GuiTemplate( 'puzzleGrid', this.themeTemplatesPath + '/puzzle-grid.html' ),
 		];
 
 		// load templates
@@ -94,7 +100,7 @@ Nonogram.Gui = class
 	/**
 	 * - draw the puzzle ui
 	 *
-	 * @param {Nonogram.Puzzle} puzzle
+	 * @param {Puzzle} puzzle
 	 */
 	drawPuzzle( puzzle )
 	{
@@ -312,7 +318,7 @@ Nonogram.Gui = class
 
 			// populate predefined puzzles
 
-			Object.keys( Nonogram.PuzzleLibrary ).forEach( ( puzzleName ) =>
+			Object.keys( PuzzleLibrary ).forEach( ( puzzleName ) =>
 			{
 				clonedExampleOptions = document.importNode( widthOptions.content, true );
 				exampleOption        = clonedExampleOptions.querySelector( 'option' );
@@ -360,7 +366,7 @@ Nonogram.Gui = class
 					  heightSelect   = document.querySelector( '[data-nonogram-generate-height]' ),
 					  width          = widthSelect.value,
 					  height         = heightSelect.value,
-					  creator        = new Nonogram.Creator(),
+					  creator        = new Creator(),
 					  puzzle         = creator.createRandom( width, height, null )
 				;
 				this.selectedExample = null;
@@ -370,15 +376,15 @@ Nonogram.Gui = class
 
 			chooseSelect.addEventListener( 'change', () =>
 			{
-				const creator = new Nonogram.Creator();
+				const creator = new Creator();
 				let puzzleDef, puzzle;
 
 				if (chooseSelect.value !== '') {
-					Object.keys( Nonogram.PuzzleLibrary ).forEach( ( puzzleName ) =>
+					Object.keys( PuzzleLibrary ).forEach( ( puzzleName ) =>
 					{
 						if (chooseSelect.value === puzzleName) {
 
-							puzzleDef            = Nonogram.PuzzleLibrary[puzzleName];
+							puzzleDef            = PuzzleLibrary[puzzleName];
 							this.selectedExample = puzzleName;
 
 							if (puzzleDef.solutionGrid) {
@@ -426,7 +432,7 @@ Nonogram.Gui = class
 
 
 	/**
-	 * - draw the console and populate with Nonogram.Creator _log
+	 * - draw the console and populate with Creator _log
 	 */
 	drawConsole()
 	{
@@ -443,7 +449,7 @@ Nonogram.Gui = class
 				return;
 			}
 
-			if (this.puzzle.creator instanceof Nonogram.Creator) {
+			if (this.puzzle.creator instanceof Creator) {
 				this.puzzle.creator.log.forEach( ( text ) =>
 				{
 					const clonedLine = document.importNode( line.content, true ),
@@ -708,9 +714,9 @@ Nonogram.Gui = class
 	 */
 	_resetPuzzle()
 	{
-		const cellElems  = this.gridContainer.querySelectorAll( '.nonogram-puzzle-grid td.puzzle-cell' ),
-			  puzzleGrid = this.gridContainer.querySelector( '.nonogram-puzzle-grid' ),
-			  solvedP    = document.querySelector( '[data-nonogram-puzzle-grid-solved]' )
+		const cellElements = this.gridContainer.querySelectorAll( '.nonogram-puzzle-grid td.puzzle-cell' ),
+			  puzzleGrid   = this.gridContainer.querySelector( '.nonogram-puzzle-grid' ),
+			  solvedP      = document.querySelector( '[data-nonogram-puzzle-grid-solved]' )
 		;
 
 		// TODO: uncomment confirm ?
@@ -724,7 +730,7 @@ Nonogram.Gui = class
 			cell.userSolution = null;
 		} );
 
-		cellElems.forEach( ( cellElem ) =>
+		cellElements.forEach( ( cellElem ) =>
 		{
 			cellElem.classList.remove( 'user-solved', 'user-positive', 'user-negative', 'solution-positive', 'solution-negative' );
 		} );
@@ -761,7 +767,7 @@ Nonogram.Gui = class
 	/**
 	 *
 	 * @param name
-	 * @returns {Nonogram.GuiTemplate}
+	 * @returns {GuiTemplate}
 	 * @throws - error if template could not be found
 	 * @private
 	 */
@@ -772,7 +778,7 @@ Nonogram.Gui = class
 			return template.name === name;
 		} );
 
-		if (!ret instanceof Nonogram.GuiTemplate) {
+		if (!(ret instanceof GuiTemplate)) {
 			throw '"' + name + '" template not found.';
 		}
 
@@ -791,23 +797,39 @@ Nonogram.Gui = class
 
 		document.querySelectorAll( 'script' ).forEach( ( script ) =>
 		{
-			try {
-				const url      = new URL( script.src ),
-					  parts    = url.pathname.split( '/' ),
-					  fileName = parts.pop()
+			if (script.getAttribute( 'type' ) === 'module') {
+
+				let myRegexp = /import\s.*?['"]((.*?)nonogram(?:\.min)?\.js)['"]/g,
+					match    = myRegexp.exec( script.textContent )
 				;
 
-				if (fileName === 'nonogram.min.js') {
-					path = url.href.replace( fileName, '' ) + 'themes';
+				if (match) {
+					path = match[2] + 'themes';
 				}
 
-			} catch (err) {
+			} else {
+
+				try {
+					const url      = new URL( script.src ),
+						  parts    = url.pathname.split( '/' ),
+						  fileName = parts.pop()
+					;
+					console.log( 'fileName:', fileName );
+
+					if (fileName === 'nonogram.js' || fileName === 'nonogram.min.js') {
+						path = url.href.replace( fileName, '' ) + 'themes';
+					}
+
+					// eslint-disable-next-line no-empty
+				} catch (err) {
+				}
 			}
 		} );
 
 		return path;
 	}
 
-
 };
+
+
 

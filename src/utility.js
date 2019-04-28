@@ -1,12 +1,12 @@
-import Nonogram from './nonogram';
+export {Utility};
 
 
 /**
  * @class
- * @type {Nonogram.Utility}
- * @this Nonogram.Utility
+ * @type {Utility}
+ * @this Utility
  */
-Nonogram.Utility = class
+const Utility = class
 {
 	/**
 	 *
@@ -64,3 +64,5 @@ Nonogram.Utility = class
 	}
 
 };
+
+

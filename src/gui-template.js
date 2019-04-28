@@ -1,10 +1,10 @@
-import Nonogram from './nonogram';
+export {GuiTemplate};
 
 
 /**
  * @class
- * @type {Nonogram.GuiTemplate}
- * @this Nonogram.GuiTemplate
+ * @type {GuiTemplate}
+ * @this GuiTemplate
  *
  * @property {string} name
  * @property {string} path
@@ -13,7 +13,7 @@ import Nonogram from './nonogram';
  * @property {Promise} loadedPromise - resolves once template has been onLoad and parsed
  * @property {boolean} isLoaded
  */
-Nonogram.GuiTemplate = class
+const GuiTemplate = class
 {
 	/**
 	 * class for loading an html template
@@ -32,6 +32,7 @@ Nonogram.GuiTemplate = class
 	}
 
 
+	// noinspection JSUnusedGlobalSymbols
 	/**
 	 * attach a callback to fire once template has loaded
 	 *
@@ -103,5 +104,3 @@ Nonogram.GuiTemplate = class
 	}
 
 };
-
-

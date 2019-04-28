@@ -1,19 +1,22 @@
-/* eslint-disable no-unused-vars */
-/**
- *
- * @type {{version: string, Puzzle: Nonogram.Puzzle, Utility: Nonogram.Utility, Solver: Nonogram.Solver, PuzzleCell: Nonogram.PuzzleCell, PuzzleLine: Nonogram.PuzzleLine, Creator: Nonogram.Creator, Gui: Nonogram.Gui, GuiTemplate: Nonogram.GuiTemplate, PuzzleLibrary: Nonogram.PuzzleLibrary}}
- * @this Nonogram
- *
- * the global namespace for the nonogram package
- *
- * @property {string} version
- * @property {class} Puzzle
- * @property {class} PuzzleCell
- * @property {class} PuzzleLine
- * @property {class} Utility
- * @property {class} Solver
- * @property {class} Gui
- */
+import {Puzzle} from '../src/puzzle.js';
+import {PuzzleCell} from '../src/puzzle-cell.js';
+import {PuzzleLine} from '../src/puzzle-line.js';
+import {Creator} from '../src/creator.js';
+import {Solver} from '../src/solver.js';
+import {Gui} from '../src/gui.js';
+
+
 const Nonogram = {
-	version: '0.2.0'
+	version:    '0.2.1',
+	Puzzle:     Puzzle,
+	PuzzleCell: PuzzleCell,
+	PuzzleLine: PuzzleLine,
+	Creator:    Creator,
+	Solver:     Solver,
+	Gui:        Gui
 };
+
+
+export {Nonogram};
+
+

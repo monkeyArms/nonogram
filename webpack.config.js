@@ -1,3 +1,4 @@
+/* eslint-disable */
 const webpack    = require( 'webpack' );
 const path       = require( 'path' );
 const CopyPlugin = require( 'copy-webpack-plugin' );
@@ -6,22 +7,11 @@ const CopyPlugin = require( 'copy-webpack-plugin' );
 module.exports = {
 
 	watch: true,
-	mode:  'production',
+
+	mode: 'production',
 
 	entry: {
-		'nonogram': [
-			path.resolve( __dirname, 'src/nonogram.js' ),
-			path.resolve( __dirname, 'src/puzzle.js' ),
-			path.resolve( __dirname, 'src/puzzle-cell.js' ),
-			path.resolve( __dirname, 'src/puzzle-line.js' ),
-			path.resolve( __dirname, 'src/utility.js' ),
-			path.resolve( __dirname, 'src/creator.js' ),
-			path.resolve( __dirname, 'src/solver.js' ),
-			path.resolve( __dirname, 'src/gui.js' ),
-			path.resolve( __dirname, 'src/gui-template.js' ),
-			path.resolve( __dirname, 'src/puzzle-library.js' ),
-			path.resolve( __dirname, 'src/export.js' ),
-		]
+		'nonogram': path.resolve( __dirname, 'src/nonogram.js' )
 	},
 
 	output: {
@@ -29,7 +19,6 @@ module.exports = {
 		publicPath:    'dist/',
 		filename:      '[name].min.js',
 		library:       'Nonogram',
-		libraryExport: 'default',
 		libraryTarget: 'umd'
 	},
 
@@ -44,4 +33,20 @@ module.exports = {
 			filename: '[name].js.map',
 		} ),
 	],
+
+	module: {
+		rules: [
+			{
+				test:    /\.js$/,
+				exclude: /(node_modules|bower_components)/,
+				use:     {
+					loader:  'babel-loader',
+					options: {
+						presets: ['@babel/preset-env']
+					}
+				}
+			}
+		]
+	},
+
 };

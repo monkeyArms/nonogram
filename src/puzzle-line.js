@@ -1,10 +1,10 @@
-import Nonogram from './nonogram';
+export {PuzzleLine};
 
 
 /**
  * @class
- * @type {Nonogram.PuzzleLine}
- * @this Nonogram.PuzzleLine
+ * @type {PuzzleLine}
+ * @this PuzzleLine
  *
  * a container representing a complete row or column of grid cells
  *
@@ -16,7 +16,7 @@ import Nonogram from './nonogram';
  * @property {array} cells
  * @property {boolean} solved
  */
-Nonogram.PuzzleLine = class
+const PuzzleLine = class
 {
 	constructor( params )
 	{
@@ -31,5 +31,7 @@ Nonogram.PuzzleLine = class
 		Object.assign( this, params );
 	}
 };
+
+
 
 

@@ -1,6 +1,6 @@
 {
     "name":            "nonogram",
-    "version":         "0.2.0",
+    "version":         "0.2.1",
     "description":     "a javascript library for creating, solving, and playing nonogram puzzles",
     "dependencies":    {},
     "main":            "./dist/nonogram.min.js",
@@ -8,6 +8,9 @@
         "build": "webpack"
     },
     "devDependencies": {
+        "@babel/core":         "^7.4.4",
+        "@babel/preset-env":   "^7.4.4",
+        "babel-loader":        "^8.0.5",
         "copy-webpack-plugin": "^5.0.2",
         "eslint":              "^5.16.0",
         "webpack":             "^4.30.0",

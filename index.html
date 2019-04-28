@@ -52,6 +52,7 @@
 		</a>
 	</header>
 
+
 	<main>
 
 		<div class="wrapper">
@@ -72,16 +73,19 @@
 				<div data-nonogram-console></div>
 			</div>
 
+
 		</div>
+
 
 	</main>
 
 </div>
 
 
-<script src="dist/nonogram.min.js"></script>
+<script type="module">
 
-<script>
+	import {Nonogram} from './src/nonogram.js';
+
 
 	const creator = new Nonogram.Creator();
 	const puzzle  = creator.createRandom( 8, 8 );
@@ -90,6 +94,23 @@
 	gui.draw( puzzle );
 
 </script>
+
+
+<!--
+<script src="./dist/nonogram.min.js"></script>
+<script>
+
+	console.log( Nonogram );
+	console.log( Nonogram.default );
+
+	const creator = new Nonogram.Creator();
+	const puzzle  = creator.createRandom( 8, 8 );
+	const gui     = new Nonogram.Gui();
+
+	gui.draw( puzzle );
+
+</script>
+-->
 
 
 </body>
