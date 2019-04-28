@@ -41,7 +41,7 @@ Place containers to hold the gui elements with `data-nonogram-{x}` attributes.  
 Include nonogram:
 
 ```html
-<script src="dist/nonogram.min.js"></script>
+<script src="./dist/nonogram.min.js"></script>
 ```
 
 Create a random 5x5 puzzle and tell the GUI to render everything:
