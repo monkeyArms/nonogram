@@ -48,11 +48,11 @@ Create a random 5x5 puzzle and tell the GUI to render everything:
 ```html
 <script>
 
-const creator = new Creator();
-const puzzle  = creator.createRandom( 5, 5 );
-const gui = new Gui();
+	const creator = new Nonogram.Creator();
+	const puzzle  = creator.createRandom( 8, 8 );
+	const gui     = new Nonogram.Gui();
 
-gui.draw( puzzle );
+	gui.draw( puzzle );
 
 </script>
 ```
