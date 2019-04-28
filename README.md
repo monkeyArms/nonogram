@@ -44,7 +44,7 @@ Include nonogram:
 <script src="./dist/nonogram.min.js"></script>
 ```
 
-Create a random 5x5 puzzle and tell the GUI to render everything:
+Create a random 8x8 puzzle and tell the GUI to render everything:
 ```html
 <script>
 
