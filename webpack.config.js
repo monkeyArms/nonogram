@@ -6,7 +6,7 @@ const CopyPlugin = require( 'copy-webpack-plugin' );
 module.exports = {
 
 	watch: true,
-	mode:  'development',
+	mode:  'production',
 
 	entry: {
 		'nonogram': [
