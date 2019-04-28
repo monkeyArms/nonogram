@@ -48,8 +48,6 @@ const Gui = class
 		this.theme     = theme || 'default';
 		this.themePath = this._resolveThemePath() + '/' + this.theme;
 
-		console.log( this.themePath );
-
 		// load theme stylesheet
 		this.themeStylesheetPath = this.themePath + '/styles.css';
 		link.rel                 = 'stylesheet';
@@ -814,7 +812,6 @@ const Gui = class
 						  parts    = url.pathname.split( '/' ),
 						  fileName = parts.pop()
 					;
-					console.log( 'fileName:', fileName );
 
 					if (fileName === 'nonogram.js' || fileName === 'nonogram.min.js') {
 						path = url.href.replace( fileName, '' ) + 'themes';

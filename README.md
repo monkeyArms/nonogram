@@ -29,12 +29,6 @@ The library has been refactored to use ES6 classes, and eliminated all dependenc
 
 (See `example` directory for a simple implementation.)
 
-Include nonogram:
-
-```html
-<script src="dist/nonogram.min.js"></script>
-```
-
 Place containers to hold the gui elements with `data-nonogram-{x}` attributes.  They can be placed anywhere in an HTML layout and none are required:
 
 ```html
@@ -43,6 +37,13 @@ Place containers to hold the gui elements with `data-nonogram-{x}` attributes.  
 <div data-nonogram-game-controls></div>
 <div data-nonogram-console></div>
 ```
+
+Include nonogram:
+
+```html
+<script src="dist/nonogram.min.js"></script>
+```
+
 Create a random 5x5 puzzle and tell the GUI to render everything:
 ```html
 <script>
@@ -55,6 +56,26 @@ gui.draw( puzzle );
 
 </script>
 ```
+
+## Usage via source ES6 modules
+
+Replace the javascript above with the following:
+
+```html
+<script type="module">
+
+	import {Creator, Gui} from './src/index.js';
+
+	const creator = new Creator();
+	const puzzle  = creator.createRandom( 8, 8 );
+	const gui     = new Gui();
+
+	gui.draw( puzzle );
+
+</script>
+```
+
+
 ## Theming
 
 Copy the `default` directory in `dist/themes` and rename it to "my-theme", etc.  Modify the theme, then tell the GUI to load it in the constructor:
@@ -62,7 +83,7 @@ Copy the `default` directory in `dist/themes` and rename it to "my-theme", etc. 
 ```javascript
 const gui = new Gui( 'my-theme' );
 ```
-The theme stylesheet is automatically prepended to your pages `<head>` element so that any other stylesheets can override it.  Theme templates are onLoad asynchronously in the background.
+The theme stylesheet is automatically prepended to your pages `<head>` element so that any other stylesheets can override it.  Theme templates are loaded asynchronously in the background.
 
 
 

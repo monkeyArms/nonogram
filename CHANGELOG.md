@@ -4,6 +4,12 @@
 ## 0.2.1
 
 - Rewrote as ES6 Modules.
+- Reconfigured webpack
+- Updated README
+
+ ### TODO
+
+ - Write tests
 
 ## 0.2.0
 
@@ -32,12 +38,6 @@
  - Created `README.md`
  - Added index.html file for github page
  - Improved UI - better layout and converted fill/cross controls to a switch
- 
- ### TODO
-
-
- - Convert to ES6 Modules
-  - Write tests
 
 
 ## 0.1.0

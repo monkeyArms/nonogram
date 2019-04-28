@@ -1,32 +1,55 @@
 /* eslint-disable */
 const webpack    = require( 'webpack' );
 const path       = require( 'path' );
+const pkg        = require( './package.json' );
 const CopyPlugin = require( 'copy-webpack-plugin' );
+
+const production = true;
+let mode, outputFilename, minimize;
+
+
+if (production) {
+
+	mode           = 'production';
+	outputFilename = pkg.name + '.min.js';
+	minimize       = true;
+
+} else {
+
+	mode           = 'development';
+	outputFilename = pkg.name + '.js';
+	minimize       = false;
+}
 
 
 module.exports = {
 
-	watch: true,
+	//watch: true,
 
-	mode: 'production',
+	mode: mode,
 
 	entry: {
-		'nonogram': path.resolve( __dirname, 'src/nonogram.js' )
+		'nonogram': __dirname + '/src/index.js',
 	},
 
 	output: {
-		path:          `${__dirname}/dist/`,
-		publicPath:    'dist/',
-		filename:      '[name].min.js',
-		library:       'Nonogram',
-		libraryTarget: 'umd'
+		path:           __dirname + '/dist/',
+		publicPath:     'dist/',
+		filename:       outputFilename,
+		library:        'Nonogram',
+		libraryTarget:  'umd',
+		umdNamedDefine: true,
+	},
+
+	optimization: {
+		minimize: minimize
 	},
 
 	plugins: [
 		new CopyPlugin( [
 			{
-				from: path.resolve( __dirname, 'src/themes' ),
-				to:   path.resolve( __dirname, 'dist/themes' )
+				from: __dirname + '/src/themes',
+				to:   __dirname + '/dist/themes'
 			},
 		] ),
 		new webpack.SourceMapDevToolPlugin( {

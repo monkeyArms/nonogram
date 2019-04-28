@@ -5,7 +5,6 @@ export {PuzzleLibrary};
  *
  * @type {{'Large Example 1': {hints: {column: *[], row: *[]}, width: number, height: number}, 'Small Example 2': {hints: {column: *[], row: *[]}, width: number, height: number}, 'Medium Example 1': {hints: {column: *[], row: *[]}, width: number, height: number}, 'Small Example 1': {solutionGrid: *[], width: number, height: number}, 'Medium Example 2': {hints: {column: *[], row: *[]}, width: number, height: number}, 'Small Example 3': {hints: {column: *[], row: *[]}, width: number, height: number}}}
  */
-
 const PuzzleLibrary = {
 
 	"Small Example 1": {

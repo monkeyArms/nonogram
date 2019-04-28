@@ -5,7 +5,8 @@
     "dependencies":    {},
     "main":            "./dist/nonogram.min.js",
     "scripts":         {
-        "build": "webpack"
+        "build": "webpack",
+        "test":  "echo \"Error: no test specified\" && exit 1"
     },
     "devDependencies": {
         "@babel/core":         "^7.4.4",

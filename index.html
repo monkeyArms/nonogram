@@ -82,10 +82,8 @@
 </div>
 
 
-<script type="module">
-
-	import {Nonogram} from './src/nonogram.js';
-
+<script src="./dist/nonogram.min.js"></script>
+<script>
 
 	const creator = new Nonogram.Creator();
 	const puzzle  = creator.createRandom( 8, 8 );
@@ -97,15 +95,13 @@
 
 
 <!--
-<script src="./dist/nonogram.min.js"></script>
-<script>
+<script type="module">
 
-	console.log( Nonogram );
-	console.log( Nonogram.default );
+	import {Creator, Gui} from './src/index.js';
 
-	const creator = new Nonogram.Creator();
+	const creator = new Creator();
 	const puzzle  = creator.createRandom( 8, 8 );
-	const gui     = new Nonogram.Gui();
+	const gui     = new Gui();
 
 	gui.draw( puzzle );
 
