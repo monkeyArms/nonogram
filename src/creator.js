@@ -17,19 +17,9 @@ export {Creator};
  * @property {array} log
  * @property {number} creationTime
  * @property {number} solvingTime
- * @property {number} elapsedTime
  */
 const Creator = class
 {
-
-
-	_reset()
-	{
-		this.log          = [];
-		this.creationTime = 0;
-		this.solvingTime  = 0;
-		this.elapsedTime  = 0;
-	}
 
 
 	// ######################################################################################	public methods
@@ -119,9 +109,8 @@ const Creator = class
 				this._logLine();
 				this._log( 'Puzzle generated in ' + elapsed + ' seconds.' );
 
-				this.creationTime = elapsed - solver.elapsedTime;
+				this.creationTime = elapsed;
 				this.solvingTime  = solver.elapsedTime;
-				this.elapsedTime  = elapsed;
 
 			} else {
 
