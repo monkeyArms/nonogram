@@ -10,7 +10,7 @@ export {GuiTemplate};
  * @property {string} path
  * @property {string} html
  * @property {array} loadedCallbacks
- * @property {Promise} loadedPromise - resolves once template has been onLoad and parsed
+ * @property {Promise} loadedPromise - resolves once template has been loaded and parsed
  * @property {boolean} isLoaded
  */
 const GuiTemplate = class
@@ -60,7 +60,7 @@ const GuiTemplate = class
 	 * attempts to fetch a template specified by this.path
 	 *
 	 * @returns {Promise} - complete when template has been fetched and parsed
-	 * @throws - error if template cannot be onLoad
+	 * @throws - error if template cannot be loaded
 	 */
 	load()
 	{
@@ -76,7 +76,7 @@ const GuiTemplate = class
 						this.isLoaded = true;
 						this.fireOnLoaded();
 
-						resolve( this.name + ' onLoad and parsed' );
+						resolve( this.name + ' loaded and parsed' );
 					} );
 
 				} else {

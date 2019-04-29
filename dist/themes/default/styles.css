@@ -362,7 +362,9 @@ table.nonogram-puzzle-grid.solved td.puzzle-cell.user-positive:not(.solution-neg
     background-image: none;
 }
 
-table.nonogram-puzzle-grid.solved td.puzzle-cell.solution-negative .fill {
+table.nonogram-puzzle-grid.solved td.puzzle-cell.solution-negative .fill,
+table.nonogram-puzzle-grid.solved td.puzzle-cell.user-negative:not(.solution-positive),
+table.nonogram-puzzle-grid.solved td.puzzle-cell:not(.solution-positive):not(.solution-negative):not(.user-positive) {
     opacity: 0.2;
 }
 

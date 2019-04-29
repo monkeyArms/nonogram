@@ -15,7 +15,7 @@ export {Gui};
  * @property {Puzzle} puzzle
  * @property {HTMLElement} gridContainer - container element for the puzzle grid ui
  * @property {array} templates - array of GuiTemplate objects
- * @property {array} templatesLoaded - array of Promises from each onLoad template
+ * @property {array} templatesLoaded - array of Promises from each loaded template
  * @property {string|null} theme - the theme to use, located in the themes/ directory
  * @property {string} themePath - the path to the specified theme located in themes/{theme}
  * @property {string} themeStylesheetPath - the path to the theme stylesheet located in themes/{theme}/styles.css
@@ -78,7 +78,7 @@ const Gui = class
 	// ######################################################################################	public drawing methods
 
 	/**
-	 * - draw all user interfaces once templates are onLoad
+	 * - draw all user interfaces once templates are loaded
 	 */
 	draw( puzzle )
 	{
@@ -256,12 +256,8 @@ const Gui = class
 				}
 			} );
 
-			window.addEventListener( 'keyup', ( e ) =>
-			{
-				if (e.key && e.key === 'x') {
-					fillModeCheckbox.dispatchEvent( new MouseEvent( 'click' ) );
-				}
-			} );
+			window.removeEventListener( 'keyup', Gui._keypressCallback );
+			window.addEventListener( 'keyup', Gui._keypressCallback );
 		} );
 	}
 
@@ -772,6 +768,21 @@ const Gui = class
 
 		return ret;
 	}
+
+
+	/**
+	 * handle window keypress events
+	 *
+	 * @param {KeyboardEvent} e
+	 * @private
+	 */
+	static _keypressCallback( e )
+	{
+		if (e.key && e.key === 'x') {
+			document.querySelector( '#nonogram-puzzle-fill-mode' ).dispatchEvent( new MouseEvent( 'click' ) );
+		}
+	}
+
 
 };
 
