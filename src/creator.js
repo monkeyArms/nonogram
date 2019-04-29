@@ -395,7 +395,7 @@ const Creator = class
 
 			for (hintKey = 0; hintKey < columnHints.length; hintKey++) {
 
-				hint = rowHints[hintKey];
+				hint = columnHints[hintKey];
 
 				if (hint > 0) {
 					puzzle.columnHints[columnKey].push( hint );
