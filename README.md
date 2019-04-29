@@ -81,7 +81,7 @@ Replace the javascript above with the following:
 Copy the `default` directory in `dist/themes` and rename it to "my-theme", etc.  Modify the theme, then tell the GUI to load it in the constructor:
 
 ```javascript
-const gui = new Gui( 'my-theme' );
+const gui = new Gui( './themes/my-theme' );
 ```
 The theme stylesheet is automatically prepended to your pages `<head>` element so that any other stylesheets can override it.  Theme templates are loaded asynchronously in the background.
 

@@ -5,6 +5,7 @@ const pkg        = require( './package.json' );
 const CopyPlugin = require( 'copy-webpack-plugin' );
 
 const production = true;
+
 let mode, outputFilename, minimize;
 
 
@@ -24,7 +25,7 @@ if (production) {
 
 module.exports = {
 
-	//watch: true,
+	watch: true,
 
 	mode: mode,
 

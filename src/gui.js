@@ -27,9 +27,9 @@ const Gui = class
 
 	/**
 	 *
-	 * @param {string|null} theme - the theme to use, located in the themes/ directory
+	 * @param {string|null} themePath - the path to the theme directory.  Defaults to ./themes/default
 	 */
-	constructor( theme )
+	constructor( themePath )
 	{
 		const head = document.querySelector( 'head' ),
 			  link = document.createElement( 'link' )
@@ -45,8 +45,7 @@ const Gui = class
 		this.boardSize  = this.boardSizes[2];
 
 		// set up theme
-		this.theme     = theme || 'default';
-		this.themePath = this._resolveThemePath() + '/' + this.theme;
+		this.themePath = themePath || './themes/default';
 
 		// load theme stylesheet
 		this.themeStylesheetPath = this.themePath + '/styles.css';
@@ -417,13 +416,9 @@ const Gui = class
 
 			solve.addEventListener( 'click', () =>
 			{
-				// TODO: uncomment confirm ?
-
-				//if (confirm( 'Are you sure you want to see the answer?' )) {
 				this.drawSolution();
 				this.drawPreview( 'solution' );
 				this._showPuzzleSolved();
-				//}
 			} );
 		} );
 	}
@@ -717,9 +712,6 @@ const Gui = class
 			  solvedP      = document.querySelector( '[data-nonogram-puzzle-grid-solved]' )
 		;
 
-		// TODO: uncomment confirm ?
-		//if (confirm( 'Are you sure you want to _reset the puzzle?' )) {
-
 		puzzleGrid.classList.remove( 'solved' );
 		solvedP.textContent = '';
 
@@ -736,8 +728,6 @@ const Gui = class
 		this.gridContainer.querySelector( '[data-nonogram-preview-grid]' ).innerHTML = '';
 
 		this.drawPreview( 'userSolution' );
-
-		//}
 	}
 
 
@@ -781,49 +771,6 @@ const Gui = class
 		}
 
 		return ret;
-	}
-
-
-	/**
-	 *
-	 * @returns {string}
-	 * @private
-	 */
-	_resolveThemePath()
-	{
-		let path = '';
-
-		document.querySelectorAll( 'script' ).forEach( ( script ) =>
-		{
-			if (script.getAttribute( 'type' ) === 'module') {
-
-				let myRegexp = /import\s.*?['"]((.*?)nonogram(?:\.min)?\.js)['"]/g,
-					match    = myRegexp.exec( script.textContent )
-				;
-
-				if (match) {
-					path = match[2] + 'themes';
-				}
-
-			} else {
-
-				try {
-					const url      = new URL( script.src ),
-						  parts    = url.pathname.split( '/' ),
-						  fileName = parts.pop()
-					;
-
-					if (fileName === 'nonogram.js' || fileName === 'nonogram.min.js') {
-						path = url.href.replace( fileName, '' ) + 'themes';
-					}
-
-					// eslint-disable-next-line no-empty
-				} catch (err) {
-				}
-			}
-		} );
-
-		return path;
 	}
 
 };
