@@ -203,10 +203,11 @@ const Creator = class
 	/**
 	 * - create a puzzle from a hint object
 	 *
-	 * @param {object} hints - structured like this:  {
-	 * 									row: [[3], [5], [5], [2, 3], [1, 5], [2, 1, 1], [2, 5], [1, 3]],
-										column: [[1, 3], [4], [], [2, 3], [5, 2], [5, 2], [5, 2], [2, 3]]
-									}
+	 * @param {object} hints - structured as follows:
+	 *                            {
+	 *									row: [[3], [5], [5], [2, 3], [1, 5], [2, 1, 1], [2, 5], [1, 3]],
+	 *									column: [[1, 3], [4], [], [2, 3], [5, 2], [5, 2], [5, 2], [2, 3]]
+	 *							  }
 	 * @param {array} hints.row
 	 * @param {array} hints.column
 	 * @throws - error if hints object is structured incorrectly
@@ -230,6 +231,7 @@ const Creator = class
 
 			throw 'hints.row or hints.column must be an array.';
 		}
+		
 		this._log( 'found row and column hints' );
 
 		width              = hints.column.length;
