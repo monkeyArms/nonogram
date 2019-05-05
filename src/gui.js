@@ -582,10 +582,6 @@ const Gui = class
 		let i;
 
 
-		//if (this.puzzle.creator) {
-		//this.puzzle.creator.log.push( 'tableWidth: ' + table.clientWidth + ', availableWidth: ' + availableWidth );
-		//}
-
 		if (table.clientWidth > availableWidth) {
 
 			for (i = 0; i < sortedBoardSizes.length; i++) {
@@ -593,13 +589,6 @@ const Gui = class
 				if (sortedBoardSizes[i].size < this.boardSize.size) {
 
 					this._changeBoardSize( sortedBoardSizes[i] );
-				}
-
-				if (this.puzzle.creator) {
-
-					//this.puzzle.creator.log.push( sortedBoardSizes[i].handle +
-					//	', tableWidth: ' + table.clientWidth + ', availableWidth: ' + availableWidth
-					//);
 				}
 
 				if (table.clientWidth <= availableWidth) {

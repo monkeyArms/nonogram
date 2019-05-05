@@ -4,12 +4,14 @@
 ## 0.2.1
 
 - Rewrote as ES6 Modules.
-- Reconfigured webpack
+- Optimized Solver and Creator performance
 - Updated README
 
  ### TODO
 
- - Write tests
+- Fix row hint spacing (too close together)
+- Add ability to shift+click or right click to cross a cell
+- Write tests
 
 ## 0.2.0
 
