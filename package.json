@@ -1,23 +1,24 @@
 {
-    "name": "nonogram",
-    "version": "0.2.1",
-    "description": "a javascript library for creating, solving, and playing nonogram puzzles",
-    "dependencies": {},
-    "main": "./dist/nonogram.min.js",
-    "scripts": {
-        "build": "webpack",
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "devDependencies": {
-        "@babel/core": "^7.6.4",
-        "@babel/preset-env": "^7.6.3",
-        "babel-loader": "^8.0.6",
-        "copy-webpack-plugin": "^5.0.4",
-        "eslint": "^5.16.0",
-        "webpack": "^4.41.2",
-        "webpack-cli": "^3.3.10"
-    },
-    "author": "monkeyArms (https://github.com/monkeyArms)",
-    "license": "MIT",
-    "homepage": "https://github.com/monkeyArms/nonogram"
+	"name":            "nonogram",
+	"version":         "0.2.1",
+	"description":     "a javascript library for creating, solving, and playing nonogram puzzles",
+	"dependencies":    {},
+	"main":            "./dist/nonogram.min.js",
+	"repository":      "https://github.com/monkeyArms/nonogram",
+	"scripts":         {
+		"build": "webpack",
+		"test":  "echo \"Error: no test specified\" && exit 1"
+	},
+	"devDependencies": {
+		"@babel/core":         "^7.7.5",
+		"@babel/preset-env":   "^7.7.6",
+		"babel-loader":        "^8.0.6",
+		"copy-webpack-plugin": "^5.1.0",
+		"eslint":              "^5.16.0",
+		"webpack":             "^4.41.2",
+		"webpack-cli":         "^3.3.10"
+	},
+	"author":          "monkeyArms (https://github.com/monkeyArms)",
+	"license":         "MIT",
+	"homepage":        "https://github.com/monkeyArms/nonogram"
 }
