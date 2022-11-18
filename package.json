@@ -16,7 +16,7 @@
 		"copy-webpack-plugin": "^5.1.0",
 		"eslint":              "^5.16.0",
 		"webpack":             "^4.41.2",
-		"webpack-cli":         "^3.3.10"
+		"webpack-cli":         "^3.3.12"
 	},
 	"author":          "monkeyArms (https://github.com/monkeyArms)",
 	"license":         "MIT",
